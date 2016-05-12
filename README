@@ -42,3 +42,15 @@ I suppose):
     and then also enable [http2](https://www.nginx.com/blog/nginx-1-9-5/)
     both at the Nginx layer and the Go layer.
 3. Give [SaltStack](https://saltstack.com/) a go for setup and deployment.
+
+
+## Installation
+
+First, you need to install [Glide](https://github.com/Masterminds/glide),
+on OSX that might look like:
+
+    brew install glide
+
+Then you need to install further dependencies via Glide:
+
+    glide install
