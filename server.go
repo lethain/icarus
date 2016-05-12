@@ -5,8 +5,6 @@ import (
 	"net/http"
 )
 
-
-
 func handleBase(w http.ResponseWriter, r *http.Request) {
 	page, err := PageFromRedis(r.URL.Path[1:])
 	if err != nil {
@@ -15,9 +13,7 @@ func handleBase(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hi, there, you're at slug '%s'\n\n%v", r.URL.Path[1:], page)
 	}
 
-	
 }
-
 
 func Serve(loc string) {
 	http.HandleFunc("/", handleBase)

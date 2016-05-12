@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"flag"
+	"fmt"
 	"io/ioutil"
-	"log"	
+	"log"
 
 	"github.com/lethain/icarus"
 )
@@ -12,10 +12,9 @@ import (
 var asMarkdown = flag.Bool("markdown", false, "Force evaluating as Markdown.")
 var asHTML = flag.Bool("html", false, "Force evaluating as HTML.")
 
-
 func render(filename string, content string) (*icarus.Page, error) {
 	if *asMarkdown {
-		return icarus.RenderMarkdown(content)		
+		return icarus.RenderMarkdown(content)
 	}
 	if *asHTML {
 		return icarus.RenderHTML(content)
@@ -37,12 +36,13 @@ func main() {
 			log.Printf("failed to read %v: %v", file, err)
 			continue
 		}
-		rendered, err := render(file, string(content))
+		page, err := render(file, string(content))
 		if err != nil {
 			log.Printf("failed to render %v: %v", file, err)
 			continue
 		}
-		pages = append(pages, rendered)		
+		fmt.Printf("rendered %v\n", page.Slug)
+		pages = append(pages, page)
 	}
 
 	fmt.Printf("loaded %v pages, now loading them into redis", len(pages))
@@ -54,5 +54,5 @@ func main() {
 		}
 
 	}
-	
+
 }

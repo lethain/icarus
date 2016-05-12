@@ -2,8 +2,8 @@ package icarus
 
 import (
 	"fmt"
-	"time"
 	"log"
+	"time"
 
 	"encoding/json"
 )
@@ -14,25 +14,25 @@ func PageFromRedis(slug string) (*Page, error) {
 	if err != nil {
 		return p, fmt.Errorf("failed to connect to redis: %v", err)
 	}
-	raw, err :=rc.Cmd("GET", p.Key()).Str()
+	raw, err := rc.Cmd("GET", p.Key()).Str()
 	if err != nil {
-		return p, fmt.Errorf("failed retrieving slug %v from redis: %v", slug, err)		
+		return p, fmt.Errorf("failed retrieving slug %v from redis: %v", slug, err)
 	}
-	
+
 	fmt.Printf("raw: %v\n", raw)
 	p.Content = raw
 	return p, nil
 }
 
 type Page struct {
-	Slug string
-	Tags []string
-	Title string
-	Summary string
-	Content string
+	Slug      string
+	Tags      []string
+	Title     string
+	Summary   string
+	Content   string
 	Published bool
-	pubDate string `json:"pub_date"`
-	editDate string `json:"edit_date"`
+	pubDate   string `json:"pub_date"`
+	editDate  string `json:"edit_date"`
 }
 
 // Generate the Redis key for this page.
@@ -91,7 +91,5 @@ func (p *Page) EnsureEditDate() {
 	}
 
 }
-
-
 
 type Pages []Page

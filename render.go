@@ -1,10 +1,10 @@
 package icarus
 
 import (
-	"fmt"
-	"strings"
 	"encoding/json"
+	"fmt"
 	"path/filepath"
+	"strings"
 
 	"github.com/russross/blackfriday"
 )
@@ -23,13 +23,11 @@ func RenderMarkdown(content string) (*Page, error) {
 	//page['html'] = markdown.markdown(page['html'], ['codehilite(css_class=highlight)', 'headerid','toc'])
 	p, content, err := ReadHeaders(content)
 	if err != nil {
-		return nil, fmt.Errorf("error reading headers: %v", err)		
+		return nil, fmt.Errorf("error reading headers: %v", err)
 	}
 	if p.Slug == "" {
 		return p, fmt.Errorf("skipping %v because it has no slug", p.Title)
 	}
-	
-	fmt.Printf("rendering %v\n", p.Slug)
 	p.Content = string(blackfriday.MarkdownCommon([]byte(content)))
 	return p, nil
 }
@@ -77,7 +75,6 @@ func ReadHeaders(content string) (*Page, string, error) {
 	p.EnsureEditDate()
 	p.EnsurePubDate()
 
-	
 	// default pub_date to now
 	return p, rest, nil
 }
@@ -86,7 +83,7 @@ func splitHeader(content string) (string, string, error) {
 	stacks := make(map[rune]int)
 	var prev rune
 	for i, c := range content {
-		if c == '\n' && prev == '\n' && (stacks['"'] % 2 == 0) && (stacks['['] == 0) && (stacks['{'] == 0) {
+		if c == '\n' && prev == '\n' && (stacks['"']%2 == 0) && (stacks['['] == 0) && (stacks['{'] == 0) {
 			return content[:i], content[i:], nil
 		}
 		// ignore escaped things
