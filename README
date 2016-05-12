@@ -46,10 +46,12 @@ I suppose):
 
 ## Installation
 
-First, you need to install [Glide](https://github.com/Masterminds/glide),
-on OSX that might look like:
+First, you need to install some system dependencies,
+like [Glide](https://github.com/Masterminds/glide), and Redis.
+On OSX, that might look like:
 
     brew install glide
+    brew install redis
 
 Then you need to install further dependencies via Glide:
 
