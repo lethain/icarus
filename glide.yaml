@@ -1,2 +1,3 @@
 package: github.com/lethain/icarus
-import: []
+import:
+- package: github.com/mediocregopher/radix.v2
