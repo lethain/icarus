@@ -45,5 +45,14 @@ func main() {
 		pages = append(pages, rendered)		
 	}
 
-	fmt.Printf("loaded %v pages:\n%v\n", len(pages), pages)
+	fmt.Printf("loaded %v pages, now loading them into redis", len(pages))
+
+	for _, page := range pages {
+		err := page.Sync()
+		if err != nil {
+			fmt.Printf("failed to load %v (%v) into redis: %v", page.Title, page.Slug, err)
+		}
+
+	}
+	
 }

@@ -1,5 +1,5 @@
-hash: 0a60ab62fb4e4095010082a1753b7766393241173ac2a2c7d5b82bebe8813e40
-updated: 2016-05-12T11:43:09.238899712-07:00
+hash: 5ee2c3927b814f8b023c86607cead513a88801ec5cbfae1f92f17f6f2006def3
+updated: 2016-05-12T15:52:58.36986049-07:00
 imports:
 - name: github.com/mediocregopher/radix.v2
   version: 74e50e64194d2d2f4836212451c28b127f9d7fa1
@@ -7,4 +7,6 @@ imports:
   - redis
 - name: github.com/russross/blackfriday
   version: 2004188462c3946efefbdcd91aa83e49b4175bfb
+- name: github.com/shurcooL/sanitized_anchor_name
+  version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 devImports: []

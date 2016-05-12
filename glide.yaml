@@ -2,3 +2,4 @@ package: github.com/lethain/icarus
 import:
 - package: github.com/mediocregopher/radix.v2
 - package: github.com/russross/blackfriday
+- package: github.com/shurcooL/sanitized_anchor_name

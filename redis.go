@@ -8,7 +8,6 @@ const RedisNetwork = "tcp"
 var RedisLocation = "127.0.0.1:6379"
 
 
-
 func GetRedisClient(loc string) (*redis.Client, error) {
 	return redis.Dial(RedisNetwork, loc)
 }
