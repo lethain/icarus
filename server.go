@@ -2,9 +2,9 @@ package icarus
 
 import (
 	"fmt"
-	"path/filepath"
 	"log"
 	"net/http"
+	"path/filepath"
 	"text/template"
 )
 
@@ -59,7 +59,7 @@ func loadTemplates(templatePath string) {
 	for _, layout := range layouts {
 		files := append(includes, layout)
 		log.Printf("loading and composing templates for %v : %v\n", filepath.Base(layout), files)
-		
+
 		templateCache[filepath.Base(layout)] = template.Must(template.ParseFiles(files...))
 	}
 }
