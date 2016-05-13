@@ -1,9 +1,13 @@
-{{ define "title"}}Title{{ end }}
+{{ define "title"}}{{ .Page.Title }}{{ end }}
 {{ define "sidebar" }}
 <h2>Sidebar</h2>
 <p>sidebar...</p>
 {{ end }}
 {{ define "content" }}
 <h2>Content</h2>
-<p>Content..</p>
+
+<h2>{{ .Page.Title }}</h2>
+
+{{ .Page.Content }}
+
 {{ end }}

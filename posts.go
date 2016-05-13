@@ -9,7 +9,7 @@ import (
 )
 
 func PageFromRedis(slug string) (*Page, error) {
-	p := &Page{}
+	p := &Page{Slug: slug}
 	rc, err := GetConfiguredRedisClient()
 	if err != nil {
 		return p, fmt.Errorf("failed to connect to redis: %v", err)
@@ -18,9 +18,9 @@ func PageFromRedis(slug string) (*Page, error) {
 	if err != nil {
 		return p, fmt.Errorf("failed retrieving slug %v from redis: %v", slug, err)
 	}
-
-	fmt.Printf("raw: %v\n", raw)
-	p.Content = raw
+	if err := json.Unmarshal([]byte(raw), &p); err != nil {
+		return p, err
+	}
 	return p, nil
 }
 

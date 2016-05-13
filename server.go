@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"log"
 	"net/http"
-	"html/template"
+	"text/template"
 )
 
 var templateCache map[string]*template.Template
