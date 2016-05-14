@@ -182,7 +182,7 @@ h6, .h6 {
 
 
 @media (max-width: 600px) {
-    .blog-post li
+    .blog-post li {
 	max-width: auto;
     }
     .blog-post p {

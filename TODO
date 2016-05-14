@@ -4,7 +4,7 @@ OK, here is some stuff we need to do:
 1. add right-rail
 1. fix footer
 1. fix header
-1. add social sharing links
+1. add social sharing links via https://github.com/kni-labs/rrssb
 1. implement sorted sets for tags, popular, etc
 1. implement analytics
 1. add popular list page

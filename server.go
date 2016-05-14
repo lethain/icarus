@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
+	"time"
 )
 
 var templateCache map[string]*template.Template
@@ -25,6 +26,7 @@ func handlePage(w http.ResponseWriter, r *http.Request) {
 
 	params := make(map[string]interface{})
 	params["Page"] = page
+	params["Now"] = time.Now()
 	// todo: push this into a param/config
 	params["DomainUrl"] = "http://lethain.com"
 	params["RSS"] = map[string]string{
