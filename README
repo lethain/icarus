@@ -56,3 +56,18 @@ On OSX, that might look like:
 Then you need to install further dependencies via Glide:
 
     glide install
+
+
+## Deployment
+
+Deployment is basically checking out this repo along with the repo
+containing your content, then using the `icontent` tool to sync your
+repository.
+
+You'll also want to sym-link your static assets into somewhere they
+can be served, depending on your setup, that might look like this:
+
+    ln -s /Users/will/git/irrational_exuberance/static/ `pwd`/static/blog/
+
+Realistically you'll probably want to be fronting this with Nginx for
+serving your static assets (probably with far-future expires and such).

@@ -1,0 +1,23 @@
+
+OK, here is some stuff we need to do:
+
+1. add right-rail
+1. fix footer
+1. fix header
+1. add social sharing links
+1. implement sorted sets for tags, popular, etc
+1. implement analytics
+1. add popular list page
+1. add recent list page
+1. add related articles list page
+1. add overall analytics page
+1. fix right-rail
+1. before rendering markdown, strip out [TOC] (and preceeding
+    HR if there is a following HR), since no longer have any
+    support for that...
+1. figure out code highlighting, both for rendering the already
+    rendered pygments stuff, but also for rendering new articles
+    with code
+1. figure out something to do with comments, maybe just giving up on
+    them entirely
+1. print stylings for easy printing

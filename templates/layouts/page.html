@@ -1,13 +1,48 @@
 {{ define "title"}}{{ .Page.Title }}{{ end }}
-{{ define "sidebar" }}
-<h2>Sidebar</h2>
-<p>sidebar...</p>
+
+{{ define "canonical" }}
+<link rel="canonical" href="http://lethain.com/philosophy-of-management/">
 {{ end }}
+
+{{ define "facebook"}}
+<meta property="og:title" content="{{ .Page.Title }}"/>
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="{{ .DomainUrl }}/{{ .Page.Slug }}"/>
+<meta property="og:description" content="{{ .Page.Summary }}"/>
+{{ end }}
+
+{{ define "header" }}
+<div class="blog-header">
+  <h1 class="blog-title">{{ .Page.Title }}</h1>
+  <p class="lead blog-description">{{ .Page.PubDate }}.
+    {{if .Page.Tags}}Filed under {{range .Page.Tags }}<span class="blog-tag"><a href="/tags/{{ . }}/">{{ . }}</a></span>{{end}}{{end}}
+  </p>
+</div>
+{{ end }}
+
 {{ define "content" }}
-<h2>Content</h2>
-
-<h2>{{ .Page.Title }}</h2>
-
-{{ .Page.Content }}
-
+<div class="blog-post">
+  {{ .Page.Content }}  
+</div>
 {{ end }}
+
+{{ define "sidebar" }}
+<div class="sidebar-module">
+  <h4>Archives</h4>
+  <ol class="list-unstyled">
+    <li><a href="#">March 2014</a></li>
+    <li><a href="#">February 2014</a></li>
+    <li><a href="#">January 2014</a></li>
+    <li><a href="#">December 2013</a></li>
+    <li><a href="#">November 2013</a></li>
+    <li><a href="#">October 2013</a></li>
+    <li><a href="#">September 2013</a></li>
+    <li><a href="#">August 2013</a></li>
+    <li><a href="#">July 2013</a></li>
+    <li><a href="#">June 2013</a></li>
+    <li><a href="#">May 2013</a></li>
+    <li><a href="#">April 2013</a></li>
+  </ol>
+</div>
+{{ end }}
+

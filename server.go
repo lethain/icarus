@@ -6,13 +6,18 @@ import (
 	"net/http"
 	"path/filepath"
 	"text/template"
+	"strings"
 )
 
 var templateCache map[string]*template.Template
 
 // Handle rendering generic pages stored in Redis.
 func handlePage(w http.ResponseWriter, r *http.Request) {
-	page, err := PageFromRedis(r.URL.Path[1:])
+	slug := r.URL.Path[1:]
+	if strings.HasSuffix(slug, "/") {
+		slug = slug[:len(slug)-1]
+	}
+	page, err := PageFromRedis(slug)
 	if err != nil {
 		fmt.Fprintf(w, "Error opening slug '%s'\n%v\n\n%v", r.URL.Path[1:], err, page)
 		return
@@ -20,14 +25,22 @@ func handlePage(w http.ResponseWriter, r *http.Request) {
 
 	params := make(map[string]interface{})
 	params["Page"] = page
+	// todo: push this into a param/config
+	params["DomainUrl"] = "http://lethain.com"
+	params["RSS"] = map[string]string{
+		"Path": "/feeds/",
+		"Title": "Page Feed",
+	}
+	
 	err = renderTemplate(w, "page.html", params)
 	if err != nil {
 		log.Printf("error rendering: %v", err)
 	}
 }
 
-func Serve(loc string, templatePath string) {
+func Serve(loc string, templatePath string, staticPath string) {
 	loadTemplates(templatePath)
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(staticPath))))
 	http.HandleFunc("/", handlePage)
 	http.ListenAndServe(loc, nil)
 }

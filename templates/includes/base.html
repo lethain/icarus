@@ -1,14 +1,69 @@
 {{ define "base" }}
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {{ template "facebook" . }}
     <title>{{ template "title" . }}</title>
+    {{if .RSS}}<link rel="alternate" type="application/rss+xml" title="{{ .RSS.Title }}" href="{{ .RSS.Path }}" />{{end}}
+    {{ template "canonical" . }}
+    <link rel="shortcut icon" href="/static/favicon.ico" ype="image/x-icon" />
+    <link rel="stylesheet" href="/static/bootstrap-3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/bootstrap-3.3.6/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/static/blog.css">
+    <link rel="stylesheet" href="/static/pygments.css">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
   </head>
   <body>
+    <div class="blog-masthead">
+      <div class="container">
+	<nav class="blog-nav">
+	  <a class="blog-nav-item active" href="#">Home</a>
+	  <a class="blog-nav-item" href="#">New features</a>
+	  <a class="blog-nav-item" href="#">Press</a>
+	  <a class="blog-nav-item" href="#">New hires</a>
+	  <a class="blog-nav-item" href="#">About</a>
+	</nav>
+      </div>
+    </div>
+
+    <div class="container">
+      {{ template "header" . }}
+
+      <div class="row">
+	<div class="col-sm-8 blog-main">
+	  {{ template "content" . }}
+	</div>
+	<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+	  <div class="sidebar-module sidebar-module-inset">
+	    <h4>Will Larson</h4>
+	    <p>blah blah blah</p>
+	  </div>
+	  {{ template "sidebar" . }}
+	</div>
+      </div>
+    </div>
+    <footer class="blog-footer">
+      <p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+      <p>
+	<a href="#">Back to top</a>
+      </p>
+    </footer>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="/static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     {{ template "scripts" . }}
-    {{ template "sidebar" . }}
-    {{ template "content" . }}
   </body>
 </html>
 {{ end }}
+{{ define "header" }}{{ end }}
+{{ define "canonical" }}{{ end }}
 {{ define "scripts" }}{{ end }}
 {{ define "sidebar" }}{{ end }}
