@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
-	"text/template"
 	"strings"
+	"text/template"
 )
 
 var templateCache map[string]*template.Template
@@ -28,10 +28,10 @@ func handlePage(w http.ResponseWriter, r *http.Request) {
 	// todo: push this into a param/config
 	params["DomainUrl"] = "http://lethain.com"
 	params["RSS"] = map[string]string{
-		"Path": "/feeds/",
+		"Path":  "/feeds/",
 		"Title": "Page Feed",
 	}
-	
+
 	err = renderTemplate(w, "page.html", params)
 	if err != nil {
 		log.Printf("error rendering: %v", err)
