@@ -1,20 +1,18 @@
 {{ define "title"}}{{ .Page.Title }}{{ end }}
 
-{{ define "canonical" }}
-<link rel="canonical" href="http://lethain.com/philosophy-of-management/">
-{{ end }}
+{{ define "canonical" }}<link rel="canonical" href="{{ .DomainUrl }}/{{ .Page.Slug }}/">{{ end }}
 
 {{ define "facebook"}}
 <meta property="og:title" content="{{ .Page.Title }}"/>
 <meta property="og:type" content="article"/>
-<meta property="og:url" content="{{ .DomainUrl }}/{{ .Page.Slug }}"/>
+<meta property="og:url" content="{{ .DomainUrl }}/{{ .Page.Slug }}/"/>
 <meta property="og:description" content="{{ .Page.Summary }}"/>
 {{ end }}
 
 {{ define "header" }}
 <div class="blog-header">
   <h1 class="blog-title">{{ .Page.Title }}</h1>
-  <p class="lead blog-description">{{ .Page.PubDate }}.
+  <p class="lead blog-description">{{ .Page.PubDate.Month }} {{ .Page.PubDate.Day }}, {{ .Page.PubDate.Year }}.
     {{if .Page.Tags}}Filed under {{range .Page.Tags }}<span class="blog-tag"><a href="/tags/{{ . }}/">{{ . }}</a></span>{{end}}{{end}}
   </p>
 </div>

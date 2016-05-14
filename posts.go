@@ -25,14 +25,14 @@ func PageFromRedis(slug string) (*Page, error) {
 }
 
 type Page struct {
-	Slug      string
-	Tags      []string
-	Title     string
-	Summary   string
-	Content   string
-	Published bool
-	pubDate   string `json:"pub_date"`
-	editDate  string `json:"edit_date"`
+	Slug      string `json:"slug"`
+	Tags      []string `json:"tags"`
+	Title     string `json:"title"`
+	Summary   string `json:"summary"`
+	Content   string `json:"content"`
+	Published bool `json:"published"`
+	PubDateStr   string `json:"pub_date"`
+	EditDateStr  string `json:"edit_date"`
 }
 
 // Generate the Redis key for this page.
@@ -64,29 +64,29 @@ func (p *Page) getDate(date string) time.Time {
 }
 
 func (p *Page) PubDate() time.Time {
-	return p.getDate(p.pubDate)
+	return p.getDate(p.PubDateStr)
 }
 
 func (p *Page) EditDate() time.Time {
-	return p.getDate(p.editDate)
+	return p.getDate(p.EditDateStr)
 }
 
 func (p *Page) InitPubDate() {
-	p.pubDate = time.Now().Format(time.RFC850)
+	p.PubDateStr = time.Now().Format(time.RFC850)
 }
 
 func (p *Page) InitEditDate() {
-	p.editDate = time.Now().Format(time.RFC850)
+	p.EditDateStr = time.Now().Format(time.RFC850)
 }
 
 func (p *Page) EnsurePubDate() {
-	if p.pubDate != "" {
+	if p.PubDateStr == "" {
 		p.InitPubDate()
 	}
 }
 
 func (p *Page) EnsureEditDate() {
-	if p.pubDate != "" {
+	if p.EditDateStr == "" {
 		p.InitEditDate()
 	}
 
