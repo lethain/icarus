@@ -26,11 +26,20 @@
 
 {{ define "sidebar" }}
 
-{{if .Around}}
+{{if .Following}}
 <div class="sidebar-module">
-  <h4>Before &amp; After</h4>
+  <h4>Next</h4>
   <ol class="list-unstyled">
-    {{range .Around}}<li><a href="/{{ .Slug }}/">{{ .Title }}</a></li>{{end}}
+    {{range .Following}}<li><a href="/{{ .Slug }}/">{{ .Title }}</a></li>{{end}}
+  </ol>
+</div>
+{{ end }}
+
+{{if .Previous}}
+<div class="sidebar-module">
+  <h4>Previous</h4>
+  <ol class="list-unstyled">
+    {{range .Previous}}<li><a href="/{{ .Slug }}/">{{ .Title }}</a></li>{{end}}
   </ol>
 </div>
 {{ end }}

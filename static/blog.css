@@ -91,7 +91,7 @@ h6, .h6 {
 }
 .blog-title {
     margin-top: 30px;
-    margin-bottom: 0;
+    margin-bottom: 20px;
     font-size: 40px;
     font-weight: normal;
 }
@@ -186,6 +186,9 @@ h6, .h6 {
     text-align: justify;
 }
 
+.blog-post img {
+    max-width: 700px;
+}
 
 @media (max-width: 600px) {
     .blog-post li {
@@ -198,6 +201,7 @@ h6, .h6 {
 	max-width: 100%;
     }
 }
+
 
 
 

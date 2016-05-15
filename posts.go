@@ -2,7 +2,6 @@ package icarus
 
 import (
 	"fmt"
-	"log"
 	"time"
 	"encoding/json"
 )
@@ -20,6 +19,10 @@ func PagesFromRedis(slugs []string) ([]*Page, error) {
 	if err != nil {
 		return pages, fmt.Errorf("failed to connect to redis: %v", err)
 	}
+	if len(keys) == 0 {
+		return []*Page{}, nil
+	}
+	
 	raws, err := rc.Cmd("MGET", keys).List()
 	if err != nil {
 		return pages, fmt.Errorf("failed retrieving slugs %v from redis: %v", slugs, err)
@@ -76,7 +79,6 @@ func (p *Page) Sync() error {
 	if err != nil {
 		return err
 	}
-	log.Printf("is %v a draft? %v", p.Slug, p.Draft)
 	if !p.Draft {
 		err := RegisterPage(p)
 		if err != nil {
@@ -88,7 +90,7 @@ func (p *Page) Sync() error {
 			return err
 		}
 	}
-	
+
 	return nil
 }
 
@@ -123,5 +125,4 @@ func (p *Page) EnsureEditDate() {
 	if p.EditDateStr == 0 {
 		p.InitEditDate()
 	}
-
 }

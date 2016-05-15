@@ -27,7 +27,7 @@ func handlePage(w http.ResponseWriter, r *http.Request) {
 	params := make(map[string]interface{})
 	params["Page"] = page
 	params["Now"] = time.Now()
-	params["Query"] = ""	
+	params["Query"] = ""
 	// todo: push this into a param/config
 	params["DomainUrl"] = "http://lethain.com"
 	params["RSS"] = map[string]string{
@@ -45,10 +45,29 @@ func handlePage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("error generating trending pages: %v", err)
 		trending = []*Page{}
-	}	
+	}
 	params["Trending"] = trending
+
+	if !page.Draft {
+		previous, err := Surrounding(page, 2, true)
+		if err != nil {
+			log.Printf("error generating previous pages: %v", err)
+			previous = []*Page{}
+		}
+		params["Previous"] = previous
+		following, err := Surrounding(page, 2, false)
+		if err != nil {
+			log.Printf("error generating following pages: %v", err)
+			following = []*Page{}
+		}
+		params["Following"] = following
+	} else {
+		params["Previous"] = []*Page{}
+		params["Following"] = []*Page{}
+	}
+
 	params["Similar"] = []*Page{}
-	params["Around"] = []*Page{}	
+
 
 	err = renderTemplate(w, "page.html", params)
 	if err != nil {
@@ -57,7 +76,7 @@ func handlePage(w http.ResponseWriter, r *http.Request) {
 	err = Track(page, r)
 	if err != nil {
 		log.Printf("error tracking %v: %v", page.Slug, err)
-	}	
+	}
 }
 
 func Serve(loc string, templatePath string, staticPath string) {

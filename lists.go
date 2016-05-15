@@ -96,6 +96,29 @@ func PagesForList(list string, offset int, count int, reverse bool) ([]*Page, er
 	return PagesFromRedis(slugs)
 }
 
+// Get up to N preceeding or following pages.
+func Surrounding(p *Page, num int, reverse bool) ([]*Page, error) {
+	start := fmt.Sprintf("(%v", p.PubDate().Unix())
+	end := "+inf"		
+	cmd := "ZRANGEBYSCORE"
+	if reverse {
+		cmd = "ZREVRANGEBYSCORE"
+		end = "-inf"
+	}
+	rc, err := GetConfiguredRedisClient()
+
+	if err != nil {
+		return []*Page{}, err
+	}	
+	slugs, err := rc.Cmd(cmd, PageZsetByTime, start, end, "LIMIT", 0, num).List()
+	if err != nil {
+		return []*Page{}, err
+	}
+	return PagesFromRedis(slugs)
+}
+
+
+
 func RecentPages(offset int, count int) ([]*Page, error) {
 	return PagesForList(PageZsetByTime, offset, count, true)
 }
@@ -105,7 +128,6 @@ func TrendingPages(offset int, count int) ([]*Page, error) {
 }
 
 func Track(p *Page, r *http.Request) error {
-	log.Printf("Track(%v)", p.Slug)
 	if !ShouldIgnore(p, r) {
 		rc, err := GetConfiguredRedisClient()
 		if err != nil {
@@ -160,7 +182,7 @@ func RegisterPageTag(p *Page, tag string) error {
 	now := p.PubDate().Unix()
 	timeKey := fmt.Sprintf(TagPagesZsetByTime, tag)
 	trendKey := fmt.Sprintf(TagPagesZsetByTrend, tag)
-	
+
 	err = rc.Cmd("ZADD", timeKey, "NX", now, p.Slug).Err
 	if err != nil {
 		return fmt.Errorf("error adding to tag recent: %v", err)
@@ -209,7 +231,7 @@ func UnregisterPageTag(p *Page, tag string) error {
 }
 
 func RegisterPage(p *Page) error {
-	now := CurrentTimestamp()
+	now := p.PubDate().Unix()
 	rc, err := GetConfiguredRedisClient()
 	if err != nil {
 		return err
