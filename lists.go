@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"time"
-	"strconv"
 )
 
 const TagZsetByTime = "tags_by_times"
@@ -136,37 +135,123 @@ func TrackAnalytics(p *Page, r *http.Request) error {
 	return nil
 }
 
-
 // Search for pages by query string.
 func Search(q string) []*Page {
 	return make([]*Page, 0)
+}
+
+func CurrentTimestamp() int64 {
+	return time.Now().Unix()
 }
 
 func timebucket(period int) (int, error) {
 	if period == 0 {
 		period = DefaultPeriod
 	}
-	nowStr := time.Now().Format(time.RFC850)
-	now, err := strconv.ParseInt(nowStr, 10, 64)
-	if err != nil {
-		return 0, err
-	}
+	now := CurrentTimestamp()
 	return int(now / int64(period)), nil
 }
 
-func addPageToTag(p *Page, tag string) {
-	/*
-    if cli.zrank(TAG_PAGES_ZSET_BY_TIME % tag_slug, page_slug) is None:
-        created = created or int(time.time())
-        cli.zadd(TAG_PAGES_ZSET_BY_TIME % tag_slug, page_slug, created)
-        cli.zadd(TAG_PAGES_ZSET_BY_TREND % tag_slug, page_slug, created)
-        cli.zincrby(TAG_ZSET_BY_PAGES, tag_slug, 1)
-*/
+func RegisterPageTag(p *Page, tag string) error {
+	rc, err := GetConfiguredRedisClient()
+	if err != nil {
+		return err
+	}
+	now := p.PubDate().Unix()
+	timeKey := fmt.Sprintf(TagPagesZsetByTime, tag)
+	trendKey := fmt.Sprintf(TagPagesZsetByTrend, tag)
+	
+	err = rc.Cmd("ZADD", timeKey, "NX", now, p.Slug).Err
+	if err != nil {
+		return fmt.Errorf("error adding to tag recent: %v", err)
+	}
+	err = rc.Cmd("ZADD", trendKey, "NX", now, p.Slug).Err		
+	if err != nil {
+		return fmt.Errorf("error adding to tag trending: %v", err)		
+	}
+	c, err := rc.Cmd("ZCOUNT", trendKey, "-inf", "+inf").Int()
+	if err != nil {
+		return fmt.Errorf("error calculating number of articles in tag: %v", err)
+	}
+	err = rc.Cmd("ZADD", TagZsetByPages, c, tag).Err
+	if err != nil {
+		return fmt.Errorf("error updating count of articles in tag: %v", err)		
+	}
+	return nil
 }
 
-func registerPage(p *Page) {
-	// cli.zadd(PAGE_ZSET_BY_TIME, slug, page['pub_date'])
-        // cli.zadd(PAGE_ZSET_BY_TREND, slug, page['pub_date'])
-        // for tag in page['tags']:
-	//    add_page_to_tag(tag, slug, created=page['pub_date'], cli=cli)
+func UnregisterPageTag(p *Page, tag string) error {
+	rc, err := GetConfiguredRedisClient()
+	if err != nil {
+		return err
+	}
+	timeKey := fmt.Sprintf(TagPagesZsetByTime, tag)
+	trendKey := fmt.Sprintf(TagPagesZsetByTrend, tag)
+	
+	err = rc.Cmd("ZREM", timeKey, p.Slug).Err
+	if err != nil {
+		return err
+	}
+	err = rc.Cmd("ZREM", trendKey, p.Slug).Err		
+	if err != nil {
+		return err
+	}
+	
+	c, err := rc.Cmd("ZCOUNT", trendKey, "-inf", "+inf").Int()
+	if err != nil {
+		return fmt.Errorf("error calculating number of articles in tag: %v", err)		
+	}
+	err = rc.Cmd("ZADD", TagZsetByPages, c, tag).Err
+	if err != nil {
+		return fmt.Errorf("error updating count of articles in tag: %v", err)				
+	}
+	return nil	
 }
+
+func RegisterPage(p *Page) error {
+	now := CurrentTimestamp()
+	rc, err := GetConfiguredRedisClient()
+	if err != nil {
+		return err
+	}
+	err = rc.Cmd("ZADD", PageZsetByTime, "NX", now, p.Slug).Err
+	if err != nil {
+		return fmt.Errorf("error adding page to recent pages: %v", err)
+		return err
+	}
+	err = rc.Cmd("ZADD", PageZsetByTrend, "NX", now, p.Slug).Err
+	if err != nil {
+		return fmt.Errorf("error adding page to trending pages: %v", err)		
+	}
+	for _, tag := range p.Tags {
+		err := RegisterPageTag(p, tag)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func UnregisterPage(p *Page) error {
+	rc, err := GetConfiguredRedisClient()
+	if err != nil {
+		return err
+	}
+	err = rc.Cmd("ZREM", PageZsetByTime, p.Slug).Err
+	if err != nil {
+		return err
+	}
+	err = rc.Cmd("ZREM", PageZsetByTrend, p.Slug).Err
+	if err != nil {
+		return err
+	}
+	for _, tag := range p.Tags {
+		err := UnregisterPageTag(p, tag)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+
+}
+

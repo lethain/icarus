@@ -1,6 +1,7 @@
 
 OK, here is some stuff we need to do:
 
+1. use a redis client pool instead of initializing them everywhere
 1. at the bottom of each article should show the next and previous several articles
 1. add right-rail
 1. implement search ;-)

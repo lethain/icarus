@@ -53,8 +53,8 @@ type Page struct {
 	Summary   string `json:"summary"`
 	Content   string `json:"content"`
 	Draft     bool   `json:"draft"`
-	PubDateStr   string `json:"pub_date"`
-	EditDateStr  string `json:"edit_date"`
+	PubDateStr   int64 `json:"pub_date"`
+	EditDateStr  int64 `json:"edit_date"`
 }
 
 // Generate the Redis key for this page.
@@ -73,15 +73,27 @@ func (p *Page) Sync() error {
 		return fmt.Errorf("failed marshalling page %v: %v", p.Slug, err)
 	}
 	_, err = rc.Cmd("SET", p.Key(), asJSON).Str()
+	if err != nil {
+		return err
+	}
+	log.Printf("is %v a draft? %v", p.Slug, p.Draft)
+	if !p.Draft {
+		err := RegisterPage(p)
+		if err != nil {
+			return err
+		}
+	} else {
+		err := UnregisterPage(p)
+		if err != nil {
+			return err
+		}
+	}
+	
 	return nil
 }
 
-func (p *Page) getDate(date string) time.Time {
-	t, err := time.Parse(time.RFC850, date)
-	if err != nil {
-		log.Printf("failed to parse %v for getDate", date)
-		return time.Time{}
-	}
+func (p *Page) getDate(date int64) time.Time {
+	t := time.Unix(date, 0)
 	return t
 }
 
@@ -94,21 +106,21 @@ func (p *Page) EditDate() time.Time {
 }
 
 func (p *Page) InitPubDate() {
-	p.PubDateStr = time.Now().Format(time.RFC850)
+	p.PubDateStr = CurrentTimestamp()
 }
 
 func (p *Page) InitEditDate() {
-	p.EditDateStr = time.Now().Format(time.RFC850)
+	p.EditDateStr = CurrentTimestamp()
 }
 
 func (p *Page) EnsurePubDate() {
-	if p.PubDateStr == "" {
+	if p.PubDateStr == 0 {
 		p.InitPubDate()
 	}
 }
 
 func (p *Page) EnsureEditDate() {
-	if p.EditDateStr == "" {
+	if p.EditDateStr == 0 {
 		p.InitEditDate()
 	}
 

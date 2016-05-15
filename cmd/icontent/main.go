@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"log"
 
@@ -41,18 +40,15 @@ func main() {
 			log.Printf("failed to render %v: %v", file, err)
 			continue
 		}
-		fmt.Printf("rendered %v\n", page.Slug)
 		pages = append(pages, page)
 	}
 
-	fmt.Printf("loaded %v pages, now loading them into redis", len(pages))
+	log.Printf("loaded %v pages, now loading them into redis", len(pages))
 
 	for _, page := range pages {
 		err := page.Sync()
 		if err != nil {
-			fmt.Printf("failed to load %v (%v) into redis: %v", page.Title, page.Slug, err)
+			log.Printf("failed to load %v (%v) into redis: %v", page.Title, page.Slug, err)
 		}
-
 	}
-
 }

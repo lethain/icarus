@@ -44,6 +44,38 @@ I suppose):
 3. Give [SaltStack](https://saltstack.com/) a go for setup and deployment.
 
 
+## Writing Posts
+
+Each article is either a Markdown or an HTML file (indicated via a trailing
+`.md` or `.html` respectively), but starting with a modified JSON blob:
+
+    "title": "This is my title",
+    "summary": "This is an exciting article about...",
+    "pub_date": 1184450111,
+    "slug": "a-unique-slug",
+    "tags": ["python", "programming"],
+    "draft": true,
+
+
+    Start writing your article here. Just make sure
+    you have an empty line after your JSON ends.
+    The trailing comma is optional.
+
+The supported parameters are:
+
+- `title` is the human readable title for your page,
+- `summary` is the human readable description paragraph for a page,
+- `pub_date` is an optional timestamp for publishing date, defaults to time it is first sync'd,
+- `slug` is a unique URL component, such that `/<slug>/` is the canonical URL for a page,
+- `tags` is a list of strings, for tags this page will be added to
+    (tags are also used for calculating related/similar pages),
+- `draft` default to false and is optional, this governs if your page is included in analytics
+    and the various article lists (e.g. a draft is only accessible if you type in its slug
+    by hand, they are not discoverable).
+
+And that's all there is to it.
+
+
 ## Installation
 
 First, you need to install some system dependencies,
