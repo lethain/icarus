@@ -27,6 +27,7 @@ func handlePage(w http.ResponseWriter, r *http.Request) {
 	params := make(map[string]interface{})
 	params["Page"] = page
 	params["Now"] = time.Now()
+	params["Query"] = ""	
 	// todo: push this into a param/config
 	params["DomainUrl"] = "http://lethain.com"
 	params["RSS"] = map[string]string{
@@ -34,10 +35,29 @@ func handlePage(w http.ResponseWriter, r *http.Request) {
 		"Title": "Page Feed",
 	}
 
+	recent, err := RecentPages(0, 5)
+	if err != nil {
+		log.Printf("error generating recent pages: %v", err)
+		recent = []*Page{}
+	}
+	params["Recent"] = recent
+	trending, err := TrendingPages(0, 5)
+	if err != nil {
+		log.Printf("error generating trending pages: %v", err)
+		trending = []*Page{}
+	}	
+	params["Trending"] = trending
+	params["Similar"] = []*Page{}
+	params["Around"] = []*Page{}	
+
 	err = renderTemplate(w, "page.html", params)
 	if err != nil {
 		log.Printf("error rendering: %v", err)
 	}
+	err = Track(page, r)
+	if err != nil {
+		log.Printf("error tracking %v: %v", page.Slug, err)
+	}	
 }
 
 func Serve(loc string, templatePath string, staticPath string) {

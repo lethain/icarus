@@ -25,11 +25,18 @@
     <div class="blog-masthead">
       <div class="container">
 	<nav class="blog-nav">
-	  <a class="blog-nav-item active" href="#">Home</a>
-	  <a class="blog-nav-item" href="#">New features</a>
-	  <a class="blog-nav-item" href="#">Press</a>
-	  <a class="blog-nav-item" href="#">New hires</a>
-	  <a class="blog-nav-item" href="#">About</a>
+	  <form action="/search/" method="GET" class="navbar-form pull-right hidden-xs" role="search">
+	    <div class="form-group">
+              <input type="text" class="form-control" placeholder="search" id="searchbox" name="q" value="{{ .Query }}">
+	    </div>
+	    <button type="submit" class="btn btn-default" alt="Search"><span class="glyphicon glyphicon-search"></span></button>
+	  </form>
+	  <a class="blog-nav-item active" href="/">Irrational Exuberance</a>
+	  <a class="blog-nav-item" href="/list/trending/">Popular</a>
+	  <a class="blog-nav-item" href="/">Recent</a>
+	  <a class="blog-nav-item" href="/tags/">Tags</a>
+	  <a class="blog-nav-item" href="/analytics/">Analytics</a>
+	  <a class="blog-nav-item" href="/feeds/">RSS</a>
 	</nav>
       </div>
     </div>
@@ -44,7 +51,19 @@
 	<div class="col-sm-3 col-sm-offset-1 blog-sidebar">
 	  <div class="sidebar-module sidebar-module-inset">
 	    <h4>Will Larson</h4>
-	    <p>blah blah blah</p>
+	    <p>Software and such. NC to SF.</p>
+	    <p>lethain[at]gmail</p>
+	    <p>
+	      <a href="https://twitter.com/Lethain">@lethain</a>,
+	      <a href="https://github.com/lethain">GitHub</a>,
+	      <a href="https://www.linkedin.com/in/will-larson-a44b543">LinkedIn</a>.
+	    </p>
+	    <p>
+	      <a href="https://www.uber.com/">Uber</a>,
+	      <a href="http://socialcode.com/">SocialCode</a>,
+	      <a href="http://digg.com/">Digg</a>,
+	      <a href="http://developer.yahoo.com/search/boss/">Y!</a>
+	    </p>
 	  </div>
 	  {{ template "sidebar" . }}
 	</div>

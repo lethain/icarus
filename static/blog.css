@@ -50,11 +50,17 @@ h6, .h6 {
     font-weight: 500;
     color: #cdddeb;
 }
-.blog-nav-item:hover,
-.blog-nav-item:focus {
+.blog-nav-item:hover, .blog-nav-item:focus {
     color: #fff;
     text-decoration: none;
+		      }
+
+.blog-nav form.navbar-form {
+    margin-top: 2px;
+    margin-bottom: 2px;
 }
+
+
 
 /* Active state gets a caret at the bottom */
 .blog-nav .active {

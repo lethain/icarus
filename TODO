@@ -1,9 +1,9 @@
 
 OK, here is some stuff we need to do:
 
+1. at the bottom of each article should show the next and previous several articles
 1. add right-rail
-1. fix footer
-1. fix header
+1. implement search ;-)
 1. add social sharing links via https://github.com/kni-labs/rrssb
 1. implement sorted sets for tags, popular, etc
 1. implement analytics

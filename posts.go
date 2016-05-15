@@ -4,25 +4,47 @@ import (
 	"fmt"
 	"log"
 	"time"
-
 	"encoding/json"
 )
 
-func PageFromRedis(slug string) (*Page, error) {
-	p := &Page{Slug: slug}
+// Retrieve a list of slugs from Redis.
+func PagesFromRedis(slugs []string) ([]*Page, error) {
+	pages := make([]*Page, 0, len(slugs))
+	keys := make([]string, 0, len(slugs))
+	for _, slug := range slugs {
+		p := &Page{Slug: slug}
+		pages = append(pages, p)
+		keys = append(keys, p.Key())
+	}
 	rc, err := GetConfiguredRedisClient()
 	if err != nil {
-		return p, fmt.Errorf("failed to connect to redis: %v", err)
+		return pages, fmt.Errorf("failed to connect to redis: %v", err)
 	}
-	raw, err := rc.Cmd("GET", p.Key()).Str()
+	raws, err := rc.Cmd("MGET", keys).List()
 	if err != nil {
-		return p, fmt.Errorf("failed retrieving slug %v from redis: %v", slug, err)
+		return pages, fmt.Errorf("failed retrieving slugs %v from redis: %v", slugs, err)
 	}
-	if err := json.Unmarshal([]byte(raw), &p); err != nil {
-		return p, err
+
+	for i, raw := range raws {
+		if err := json.Unmarshal([]byte(raw), pages[i]); err != nil {
+			return pages, err
+		}
 	}
-	return p, nil
+	return pages, nil
 }
+
+// Retrieve one page from Redis.
+func PageFromRedis(slug string) (*Page, error) {
+	pages, err := PagesFromRedis([]string{slug})
+	if err != nil {
+		return nil, err
+	}
+	if len(pages) != 1 {
+		return nil, fmt.Errorf("retrieve none-one number of values for %v", slug)
+	}
+	return pages[0], nil
+}
+
 
 type Page struct {
 	Slug      string `json:"slug"`
@@ -30,7 +52,7 @@ type Page struct {
 	Title     string `json:"title"`
 	Summary   string `json:"summary"`
 	Content   string `json:"content"`
-	Published bool `json:"published"`
+	Draft     bool   `json:"draft"`
 	PubDateStr   string `json:"pub_date"`
 	EditDateStr  string `json:"edit_date"`
 }
@@ -91,5 +113,3 @@ func (p *Page) EnsureEditDate() {
 	}
 
 }
-
-type Pages []Page
