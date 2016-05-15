@@ -2,17 +2,24 @@
 OK, here is some stuff we need to do:
 
 1. use a redis client pool instead of initializing them everywhere
-1. at the bottom of each article should show the next and previous several articles
-1. add right-rail
+
+1. implement "list" pages for recent, popular, tag X
+    1. add popular list page
+    1. add recent list page
+    1. add popular in tag page
+1. add missing pages
+    1. 404 pages
+    2. 500 pages
+    2. add list of tags page
+1. cosmetic / UI
+    1. add social sharing links via https://github.com/kni-labs/rrssb
+1. Analytics
+    1. add ip rate-limiting logic to all analytics
+    1. start tracking analytics
+    1. add analytics to right-rail
+    1. add /analytics/ page
 1. implement search ;-)
-1. add social sharing links via https://github.com/kni-labs/rrssb
-1. implement sorted sets for tags, popular, etc
-1. implement analytics
-1. add popular list page
-1. add recent list page
-1. add related articles list page
-1. add overall analytics page
-1. fix right-rail
+
 1. before rendering markdown, strip out [TOC] (and preceeding
     HR if there is a following HR), since no longer have any
     support for that...

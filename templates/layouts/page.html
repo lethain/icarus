@@ -1,11 +1,11 @@
 {{ define "title"}}{{ .Page.Title }}{{ end }}
 
-{{ define "canonical" }}<link rel="canonical" href="{{ .DomainUrl }}/{{ .Page.Slug }}/">{{ end }}
+{{ define "canonical" }}<link rel="canonical" href="{{ .Cfg.DomainUrl }}/{{ .Page.Slug }}/">{{ end }}
 
 {{ define "facebook"}}
 <meta property="og:title" content="{{ .Page.Title }}"/>
 <meta property="og:type" content="article"/>
-<meta property="og:url" content="{{ .DomainUrl }}/{{ .Page.Slug }}/"/>
+<meta property="og:url" content="{{ .Cfg.DomainUrl }}/{{ .Page.Slug }}/"/>
 <meta property="og:description" content="{{ .Page.Summary }}"/>
 {{ end }}
 

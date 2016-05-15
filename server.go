@@ -12,28 +12,8 @@ import (
 
 var templateCache map[string]*template.Template
 
-// Handle rendering generic pages stored in Redis.
-func handlePage(w http.ResponseWriter, r *http.Request) {
-	slug := r.URL.Path[1:]
-	if strings.HasSuffix(slug, "/") {
-		slug = slug[:len(slug)-1]
-	}
-	page, err := PageFromRedis(slug)
-	if err != nil {
-		fmt.Fprintf(w, "Error opening slug '%s'\n%v\n\n%v", r.URL.Path[1:], err, page)
-		return
-	}
-
+func buildSidebar(cfg *Config, p *Page) (map[string]interface{}, error) {
 	params := make(map[string]interface{})
-	params["Page"] = page
-	params["Now"] = time.Now()
-	params["Query"] = ""
-	// todo: push this into a param/config
-	params["DomainUrl"] = "http://lethain.com"
-	params["RSS"] = map[string]string{
-		"Path":  "/feeds/",
-		"Title": "Page Feed",
-	}
 
 	recent, err := RecentPages(0, 5)
 	if err != nil {
@@ -47,43 +27,87 @@ func handlePage(w http.ResponseWriter, r *http.Request) {
 		trending = []*Page{}
 	}
 	params["Trending"] = trending
-
-	if !page.Draft {
-		previous, err := Surrounding(page, 2, true)
+	if p != nil && !p.Draft {
+		previous, err := Surrounding(p, 2, true)
 		if err != nil {
 			log.Printf("error generating previous pages: %v", err)
 			previous = []*Page{}
 		}
 		params["Previous"] = previous
-		following, err := Surrounding(page, 2, false)
+
+		following, err := Surrounding(p, 2, false)
 		if err != nil {
 			log.Printf("error generating following pages: %v", err)
 			following = []*Page{}
 		}
 		params["Following"] = following
+
+		// TOOD: implement similar
+		params["Similar"] = []*Page{}
 	} else {
 		params["Previous"] = []*Page{}
 		params["Following"] = []*Page{}
+		params["Similar"] = []*Page{}
 	}
-
-	params["Similar"] = []*Page{}
-
-
-	err = renderTemplate(w, "page.html", params)
-	if err != nil {
-		log.Printf("error rendering: %v", err)
-	}
-	err = Track(page, r)
-	if err != nil {
-		log.Printf("error tracking %v: %v", page.Slug, err)
-	}
+	return params, nil
 }
 
-func Serve(loc string, templatePath string, staticPath string) {
-	loadTemplates(templatePath)
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(staticPath))))
-	http.HandleFunc("/", handlePage)
-	http.ListenAndServe(loc, nil)
+func defaultParams(cfg *Config, p *Page) (map[string]interface{}, error) {
+	params, err := buildSidebar(cfg, p)
+	if err != nil {
+		return params, err
+	}
+	params["Cfg"] = cfg
+	params["Page"] = p
+	params["Now"] = time.Now()
+	params["Query"] = ""
+	return params, nil
+}
+
+// build http.HandlerFunc for rendering generic pages stored in Redis.
+func makePageHandler(cfg *Config) http.HandlerFunc {
+	handle := func(w http.ResponseWriter, r *http.Request) {
+		slug := r.URL.Path[1:]
+		if strings.HasSuffix(slug, "/") {
+			slug = slug[:len(slug)-1]
+		}
+		p, err := PageFromRedis(slug)
+		if err != nil {
+			errorPage(w, r, p, err)
+			return
+		}
+
+		params, err := defaultParams(cfg, p)
+		if err != nil {
+			errorPage(w, r, p, err)
+			return
+		}
+
+		err = renderTemplate(w, "page.html", params)
+		if err != nil {
+			errorPage(w, r, p, err)
+			return
+		}
+
+		err = Track(p, r)
+		if err != nil {
+			errorPage(w, r, p, err)
+			return
+		}
+	}
+	return handle
+}
+
+func errorPage(w http.ResponseWriter, r *http.Request, p *Page, err error) {
+	log.Printf("Error opening slug '%s'\n%v\n\n%v", r.URL.Path[1:], err, p)
+	fmt.Fprintf(w, "Error opening slug '%s'\n%v\n\n%v", r.URL.Path[1:], err, p)
+}
+
+func Serve(cfg *Config) {
+	loadTemplates(cfg.TemplateDir)
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(cfg.StaticDir))))
+	http.HandleFunc("/", makePageHandler(cfg))
+	http.ListenAndServe(cfg.NetLoc, nil)
 }
 
 func renderTemplate(w http.ResponseWriter, name string, data map[string]interface{}) error {
