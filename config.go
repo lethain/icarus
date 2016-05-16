@@ -22,6 +22,7 @@ type Config struct {
 	RSS       RSSConfig
 	TemplateDir string
 	StaticDir string
+	ListCount int
 }
 
 func (c *Config) String() string {

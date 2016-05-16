@@ -52,43 +52,80 @@ func buildSidebar(cfg *Config, p *Page) (map[string]interface{}, error) {
 	return params, nil
 }
 
-func defaultParams(cfg *Config, p *Page) (map[string]interface{}, error) {
+func defaultParams(cfg *Config, p *Page, r *http.Request) (map[string]interface{}, error) {
 	params, err := buildSidebar(cfg, p)
 	if err != nil {
 		return params, err
 	}
 	params["Cfg"] = cfg
 	params["Page"] = p
+	params["Path"] = r.URL.Path[1:]
 	params["Now"] = time.Now()
 	params["Query"] = ""
 	return params, nil
 }
 
-// build http.HandlerFunc for rendering generic pages stored in Redis.
-func makePageHandler(cfg *Config) http.HandlerFunc {
+
+func makeListHandler(cfg *Config, list string, title string) http.HandlerFunc {
 	handle := func(w http.ResponseWriter, r *http.Request) {
-		slug := r.URL.Path[1:]
-		if strings.HasSuffix(slug, "/") {
-			slug = slug[:len(slug)-1]
+		// TODO: get this from HTTP request
+		offset := 0
+		pgs, err := PagesForList(list, offset, cfg.ListCount, true)
+		if err != nil {
+			errorPage(w, r, nil, err)
+			return
 		}
+		params, err := defaultParams(cfg, nil, r)
+		if err != nil {
+			errorPage(w, r, nil, err)
+			return
+		}
+		params["Pages"] = pgs
+		params["Title"] = title
+		err = renderTemplate(w, "list.html", params)
+		if err != nil {
+			errorPage(w, r, nil, err)
+			return
+		}
+
+	}
+	return handle
+}
+
+// Determine the slug for a request, including defaulting to
+// the latest post if no slug is specified.
+func getSlug(r *http.Request) string {
+	slug := r.URL.Path[1:]
+	if strings.HasSuffix(slug, "/") {
+		slug = slug[:len(slug)-1]
+	}
+	return slug
+}
+
+// build http.HandlerFunc for rendering generic pages stored in Redis.
+func makePageHandler(cfg *Config, indexHandler http.HandlerFunc) http.HandlerFunc {
+	handle := func(w http.ResponseWriter, r *http.Request) {
+		slug := getSlug(r)
+		if slug == "" {
+			indexHandler(w, r)
+			return
+		}
+		
 		p, err := PageFromRedis(slug)
 		if err != nil {
 			errorPage(w, r, p, err)
 			return
 		}
-
-		params, err := defaultParams(cfg, p)
+		params, err := defaultParams(cfg, p, r)
 		if err != nil {
 			errorPage(w, r, p, err)
 			return
 		}
-
 		err = renderTemplate(w, "page.html", params)
 		if err != nil {
 			errorPage(w, r, p, err)
 			return
 		}
-
 		err = Track(p, r)
 		if err != nil {
 			errorPage(w, r, p, err)
@@ -105,8 +142,12 @@ func errorPage(w http.ResponseWriter, r *http.Request, p *Page, err error) {
 
 func Serve(cfg *Config) {
 	loadTemplates(cfg.TemplateDir)
+	recentHandler := makeListHandler(cfg, PageZsetByTime, "Recent Pages")
+
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(cfg.StaticDir))))
-	http.HandleFunc("/", makePageHandler(cfg))
+	http.HandleFunc("/list/trending/", makeListHandler(cfg, PageZsetByTrend, "Popular Pages"))
+	http.HandleFunc("/list/recent/", recentHandler)
+	http.HandleFunc("/", makePageHandler(cfg, recentHandler))
 	http.ListenAndServe(cfg.NetLoc, nil)
 }
 

@@ -1,0 +1,49 @@
+{{ define "sidebar" }}
+
+{{if .Following}}
+<div class="sidebar-module">
+  <h4>Next</h4>
+  <ol class="list-unstyled">
+    {{range .Following}}<li><a href="/{{ .Slug }}/">{{ .Title }}</a></li>{{end}}
+  </ol>
+</div>
+{{ end }}
+
+{{if .Previous}}
+<div class="sidebar-module">
+  <h4>Previous</h4>
+  <ol class="list-unstyled">
+    {{range .Previous}}<li><a href="/{{ .Slug }}/">{{ .Title }}</a></li>{{end}}
+  </ol>
+</div>
+{{ end }}
+
+{{if .Recent}}
+<div class="sidebar-module">
+  <h4>Recent</h4>
+  <ol class="list-unstyled">
+    {{range .Recent}}<li><a href="/{{ .Slug }}/">{{ .Title }}</a></li>{{end}}
+  </ol>
+</div>
+{{ end }}
+
+{{if .Similar}}
+<div class="sidebar-module">
+  <h4>Similar</h4>
+  <ol class="list-unstyled">
+    {{range .Similar}}<li><a href="/{{ .Slug }}/">{{ .Title }}</a></li>{{end}}
+  </ol>
+</div>
+{{ end }}
+
+{{if .Trending}}
+<div class="sidebar-module">
+  <h4>Trending</h4>
+  <ol class="list-unstyled">
+    {{range .Trending}}<li><a href="/{{ .Slug }}/">{{ .Title }}</a></li>{{end}}
+  </ol>
+</div>
+{{ end }}
+
+{{ end }}
+

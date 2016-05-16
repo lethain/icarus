@@ -2,7 +2,7 @@
 OK, here is some stuff we need to do:
 
 1. use a redis client pool instead of initializing them everywhere
-
+1. add pagination to lists
 1. implement "list" pages for recent, popular, tag X
     1. add popular list page
     1. add recent list page

@@ -1,0 +1,17 @@
+{{ define "title"}}{{ .Title }}{{ end }}
+
+{{ define "header" }}
+<div class="blog-header">
+  <h1 class="blog-title">{{ .Title }}</h1>
+</div>
+{{ end }}
+
+{{ define "content" }}
+{{range .Pages}}
+<div class="blog-post">
+  <h2 class="blog-post-title"><a href="/{{ .Slug }}/">{{ .Title }}</a></h2>
+  <p><span class="blog-inline-date">{{ .PubDate.Month }} {{ .PubDate.Day }}, {{ .PubDate.Year }}</span> {{ .Summary }}</p>
+  {{if .Tags}}<p class="blog-tags">Filed under {{range .Tags }}<span class="blog-tag"><a href="/tags/{{ . }}/">{{ . }}</a></span>{{end}}</p>{{end}}  
+</div>
+{{ end }}
+{{ end }}

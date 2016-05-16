@@ -31,11 +31,11 @@
 	    </div>
 	    <button type="submit" class="btn btn-default" alt="Search"><span class="glyphicon glyphicon-search"></span></button>
 	  </form>
-	  <a class="blog-nav-item active" href="/">Irrational Exuberance</a>
-	  <a class="blog-nav-item" href="/list/trending/">Popular</a>
-	  <a class="blog-nav-item" href="/">Recent</a>
-	  <a class="blog-nav-item" href="/tags/">Tags</a>
-	  <a class="blog-nav-item" href="/analytics/">Analytics</a>
+	  <a class="blog-nav-item strong" href="/">Irrational Exuberance</a>
+	  <a class="blog-nav-item{{if eq .Path "list/trending/"}} active{{end}}" href="/list/trending/">Popular</a>
+	  <a class="blog-nav-item{{if eq .Path "list/recent/" "" }} active{{end}}" href="/list/recent/">Recent</a>
+	  <a class="blog-nav-item{{if eq .Path "tags/"}} active{{end}}" href="/tags/">Tags</a>
+	  <a class="blog-nav-item{{if eq .Path "analytics/"}} active{{end}}" href="/analytics/">Analytics</a>
 	  <a class="blog-nav-item" href="/feeds/">RSS</a>
 	</nav>
       </div>
@@ -84,3 +84,4 @@
 {{ define "canonical" }}{{ end }}
 {{ define "scripts" }}{{ end }}
 {{ define "sidebar" }}{{ end }}
+{{ define "facebook" }}{{ end }}
