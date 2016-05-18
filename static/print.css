@@ -13,6 +13,6 @@ code {
     font:.9em "Courier New", Monaco, Courier, monospace;
 }
 
-.blog-sidebar, .blog-masthead, .blog-footer, .blog-header .blog-tags {
+.blog-sidebar, .blog-masthead, .blog-footer, .blog-header .blog-tags, .rrssb-buttons {
     display: none;
 }

@@ -1,15 +1,9 @@
 
 OK, here is some stuff we need to do:
 
-
-1. implement "list" pages for recent, popular, tag X
-    1. add popular in tag page
 1. add missing pages
     1. 404 pages
     2. 500 pages
-    2. add list of tags page
-1. cosmetic / UI
-    1. add social sharing links via https://github.com/kni-labs/rrssb
 1. Related pages
     1. calculate related pages for a given page
     2. create 'similar/related' right-rail module for each page

@@ -233,6 +233,13 @@ nav.blog-pagination {
 }
 
 /*
+ * Social Sharing / RRSSB
+ */
+.blog-post .rrssb-buttons {
+    max-width: 500px;
+}
+
+/*
  * Footer
  */
 
