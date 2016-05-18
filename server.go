@@ -90,19 +90,19 @@ func makeTagsHandler(cfg *Config, title string) http.HandlerFunc {
 		}
 		params, err := defaultParams(cfg, nil, r)
 		if err != nil {
-			errorPage(w, r, nil, err)
+			errorPage(w, r, cfg, nil, err)
 			return
 		}
 		params["Title"] = title
 		allTags, err := GetAllTags()
 		if err != nil {
-			errorPage(w, r, nil, err)
+			errorPage(w, r, cfg, nil, err)
 			return
 		}
 		params["Tags"] = allTags
 		err = renderTemplate(w, "tags.html", params)
 		if err != nil {
-			errorPage(w, r, nil, err)
+			errorPage(w, r, cfg, nil, err)
 			return
 		}
 
@@ -126,17 +126,17 @@ func makeListHandler(cfg *Config, list string, title string) http.HandlerFunc {
 		}
 		total, err := PagesInList(list)
 		if err != nil {
-			errorPage(w, r, nil, err)
+			errorPage(w, r, cfg, nil, err)
 			return
 		}
 		pgs, err := PagesForList(list, offset, cfg.ListCount, true)
 		if err != nil {
-			errorPage(w, r, nil, err)
+			errorPage(w, r, cfg, nil, err)
 			return
 		}
 		params, err := defaultParams(cfg, nil, r)
 		if err != nil {
-			errorPage(w, r, nil, err)
+			errorPage(w, r, cfg, nil, err)
 			return
 		}
 		params["Title"] = title
@@ -144,7 +144,7 @@ func makeListHandler(cfg *Config, list string, title string) http.HandlerFunc {
 		params["Paginator"] = NewPaginator(offset, total, cfg.ListCount, 10)
 		err = renderTemplate(w, "list.html", params)
 		if err != nil {
-			errorPage(w, r, nil, err)
+			errorPage(w, r, cfg, nil, err)
 			return
 		}
 
@@ -175,43 +175,58 @@ func makePageHandler(cfg *Config, indexHandler http.HandlerFunc) http.HandlerFun
 			if _, ok := err.(*NoSuchPagesError); ok {
 				notFoundPage(w, r, cfg, err)
 			} else {
-				errorPage(w, r, p, err)
+				errorPage(w, r, cfg, p, err)
 			}
 			return
 		}
 		params, err := defaultParams(cfg, p, r)
 		if err != nil {
-			errorPage(w, r, p, err)
+			errorPage(w, r, cfg, p, err)
 			return
 		}
 		err = renderTemplate(w, "page.html", params)
 		if err != nil {
-			errorPage(w, r, p, err)
+			errorPage(w, r, cfg, p, err)
 			return
 		}
 		err = Track(p, r)
 		if err != nil {
-			errorPage(w, r, p, err)
+			errorPage(w, r, cfg, p, err)
 			return
 		}
 	}
 	return handle
 }
 
-func errorPage(w http.ResponseWriter, r *http.Request, p *Page, err error) {
+func errorPage(w http.ResponseWriter, r *http.Request, cfg *Config, p *Page, err error) {
+	params := map[string]interface{}{
+		"Title": "500",
+		"Previous": []*Page{},
+		"Following": []*Page{},
+		"Similar": []*Page{},
+		"Recent": []*Page{},
+		"Trending": []*Page{},
+		"Cfg": cfg,
+		"Path":  r.URL.Path[1:],
+		"Query": "",
+	}
+
 	log.Printf("Error opening slug '%s'\n%v\n\n%v", r.URL.Path[1:], err, p)
-	fmt.Fprintf(w, "Error opening slug '%s'\n%v\n\n%v", r.URL.Path[1:], err, p)
+	err = renderTemplate(w, "500.html", params)
+	if err != nil {
+		fmt.Fprint(w, "Things are going very poorly. Please check back later.")
+	}
 }
 
 func notFoundPage(w http.ResponseWriter, r *http.Request, cfg *Config, err error) {
 	params, err := defaultParams(cfg, nil, r)
 	if err != nil {
-		errorPage(w, r, nil, err)
+		errorPage(w, r, cfg, nil, err)
 		return
 	}
 	err = renderTemplate(w, "404.html", params)
 	if err != nil {
-		errorPage(w, r, nil, err)
+		errorPage(w, r, cfg, nil, err)
 		return
 	}
 
