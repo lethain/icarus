@@ -13,7 +13,7 @@
 <div class="blog-header">
   <h1 class="blog-title">{{ .Page.Title }}</h1>
   <p class="lead blog-description">{{ .Page.PubDate.Month }} {{ .Page.PubDate.Day }}, {{ .Page.PubDate.Year }}.
-    {{if .Page.Tags}}Filed under {{range .Page.Tags }}<span class="blog-tag"><a href="/tags/{{ . }}/">{{ . }}</a></span>{{end}}{{end}}
+    {{if .Page.Tags}}<span class="blog-tags">Filed under {{range .Page.Tags }}<span class="blog-tag"><a href="/tags/{{ . }}/">{{ . }}</a></span>{{end}}</span>{{end}}
   </p>
 </div>
 {{ end }}

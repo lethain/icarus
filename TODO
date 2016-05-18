@@ -1,11 +1,8 @@
 
 OK, here is some stuff we need to do:
 
-1. use a redis client pool instead of initializing them everywhere
-1. add pagination to lists
+
 1. implement "list" pages for recent, popular, tag X
-    1. add popular list page
-    1. add recent list page
     1. add popular in tag page
 1. add missing pages
     1. 404 pages
@@ -19,7 +16,7 @@ OK, here is some stuff we need to do:
     1. add analytics to right-rail
     1. add /analytics/ page
 1. implement search ;-)
-
+1. use a redis client pool instead of initializing them everywhere
 1. before rendering markdown, strip out [TOC] (and preceeding
     HR if there is a following HR), since no longer have any
     support for that...
@@ -28,4 +25,4 @@ OK, here is some stuff we need to do:
     with code
 1. figure out something to do with comments, maybe just giving up on
     them entirely
-1. print stylings for easy printing
+1. add css compaction/compression/merging

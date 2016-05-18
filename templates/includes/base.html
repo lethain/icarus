@@ -10,10 +10,11 @@
     {{if .RSS}}<link rel="alternate" type="application/rss+xml" title="{{ .Cfg.RSS.Title }}" href="{{ .Cfg.RSS.Path }}" />{{end}}
     {{ template "canonical" . }}
     <link rel="shortcut icon" href="/static/favicon.ico" ype="image/x-icon" />
-    <link rel="stylesheet" href="/static/bootstrap-3.3.6/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/bootstrap-3.3.6/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="/static/blog.css">
-    <link rel="stylesheet" href="/static/pygments.css">
+    <link rel="stylesheet" href="/static/bootstrap-3.3.6/css/bootstrap.min.css" media="screen,projection">
+    <link rel="stylesheet" href="/static/bootstrap-3.3.6/css/bootstrap-theme.min.css" media="screen,projection">
+    <link rel="stylesheet" href="/static/blog.css" media="screen,projection">
+    <link rel="stylesheet" href="/static/pygments.css" media="screen,projection">
+    <link href="/static/print.css" rel="stylesheet" type="text/css" media="print" />    
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
