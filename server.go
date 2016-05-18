@@ -5,10 +5,10 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"text/template"
 	"time"
-	"strconv"
 )
 
 var templateCache map[string]*template.Template
@@ -111,7 +111,6 @@ func makeTagsHandler(cfg *Config, title string) http.HandlerFunc {
 
 }
 
-
 func makeListHandler(cfg *Config, list string, title string) http.HandlerFunc {
 	handle := func(w http.ResponseWriter, r *http.Request) {
 		offset := 0
@@ -200,15 +199,15 @@ func makePageHandler(cfg *Config, indexHandler http.HandlerFunc) http.HandlerFun
 
 func errorPage(w http.ResponseWriter, r *http.Request, cfg *Config, p *Page, err error) {
 	params := map[string]interface{}{
-		"Title": "500",
-		"Previous": []*Page{},
+		"Title":     "500",
+		"Previous":  []*Page{},
 		"Following": []*Page{},
-		"Similar": []*Page{},
-		"Recent": []*Page{},
-		"Trending": []*Page{},
-		"Cfg": cfg,
-		"Path":  r.URL.Path[1:],
-		"Query": "",
+		"Similar":   []*Page{},
+		"Recent":    []*Page{},
+		"Trending":  []*Page{},
+		"Cfg":       cfg,
+		"Path":      r.URL.Path[1:],
+		"Query":     "",
 	}
 
 	log.Printf("Error opening slug '%s'\n%v\n\n%v", r.URL.Path[1:], err, p)
@@ -231,7 +230,6 @@ func notFoundPage(w http.ResponseWriter, r *http.Request, cfg *Config, err error
 	}
 
 }
-
 
 func Serve(cfg *Config) {
 	loadTemplates(cfg.TemplateDir)

@@ -8,7 +8,7 @@ import (
 )
 
 const TagZsetByTime = "tags_by_times"
-const TagZsetByPages  = "tags_by_pages"
+const TagZsetByPages = "tags_by_pages"
 const TagPagesZsetByTime = "tag_pages_by_time.%v"
 const TagPagesZsetByTrend = "tag_pages_by_trend.%v"
 const PageZsetByTime = "pages_by_time"
@@ -29,7 +29,6 @@ const PageViewPageBucket = "analytics.pv_bucket.%v"
 const HistoricalReferrer = "imported from Google Analytics"
 const DirectReferrer = "DIRECT"
 
-
 var FilteredRefs = []string{
 	"www.google.com",
 	"lethain.com",
@@ -38,7 +37,7 @@ var FilteredRefs = []string{
 	HistoricalReferrer,
 }
 
-var BotAgents = []string {
+var BotAgents = []string{
 	"-",
 	"facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
 	"Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)",
@@ -56,12 +55,12 @@ var BotAgents = []string {
 
 func ShouldIgnore(p *Page, r *http.Request) bool {
 	/*
-    if not slug.endswith('.png') and \
-            useragent not in BOT_AGENTS and \
-            'subscribers' not in lowered and \
-            'bot' not in lowered and \
-            not useragent.startswith('Reeder'):
-*/
+	   if not slug.endswith('.png') and \
+	           useragent not in BOT_AGENTS and \
+	           'subscribers' not in lowered and \
+	           'bot' not in lowered and \
+	           not useragent.startswith('Reeder'):
+	*/
 	// TODO: implement
 	if p.Draft {
 		log.Printf("ignoring %v because draft", p.Slug)
@@ -107,7 +106,7 @@ func PagesForList(list string, offset int, count int, reverse bool) ([]*Page, er
 // Get up to N preceeding or following pages.
 func Surrounding(p *Page, num int, reverse bool) ([]*Page, error) {
 	start := fmt.Sprintf("(%v", p.PubDate().Unix())
-	end := "+inf"		
+	end := "+inf"
 	cmd := "ZRANGEBYSCORE"
 	if reverse {
 		cmd = "ZREVRANGEBYSCORE"
@@ -117,15 +116,13 @@ func Surrounding(p *Page, num int, reverse bool) ([]*Page, error) {
 
 	if err != nil {
 		return []*Page{}, err
-	}	
+	}
 	slugs, err := rc.Cmd(cmd, PageZsetByTime, start, end, "LIMIT", 0, num).List()
 	if err != nil {
 		return []*Page{}, err
 	}
 	return PagesFromRedis(slugs)
 }
-
-
 
 func RecentPages(offset int, count int) ([]*Page, error) {
 	return PagesForList(PageZsetByTime, offset, count, true)
@@ -195,9 +192,9 @@ func RegisterPageTag(p *Page, tag string) error {
 	if err != nil {
 		return fmt.Errorf("error adding to tag recent: %v", err)
 	}
-	err = rc.Cmd("ZADD", trendKey, "NX", now, p.Slug).Err		
+	err = rc.Cmd("ZADD", trendKey, "NX", now, p.Slug).Err
 	if err != nil {
-		return fmt.Errorf("error adding to tag trending: %v", err)		
+		return fmt.Errorf("error adding to tag trending: %v", err)
 	}
 	c, err := rc.Cmd("ZCOUNT", trendKey, "-inf", "+inf").Int()
 	if err != nil {
@@ -205,7 +202,7 @@ func RegisterPageTag(p *Page, tag string) error {
 	}
 	err = rc.Cmd("ZADD", TagZsetByPages, c, tag).Err
 	if err != nil {
-		return fmt.Errorf("error updating count of articles in tag: %v", err)		
+		return fmt.Errorf("error updating count of articles in tag: %v", err)
 	}
 	return nil
 }
@@ -217,25 +214,25 @@ func UnregisterPageTag(p *Page, tag string) error {
 	}
 	timeKey := fmt.Sprintf(TagPagesZsetByTime, tag)
 	trendKey := fmt.Sprintf(TagPagesZsetByTrend, tag)
-	
+
 	err = rc.Cmd("ZREM", timeKey, p.Slug).Err
 	if err != nil {
 		return err
 	}
-	err = rc.Cmd("ZREM", trendKey, p.Slug).Err		
+	err = rc.Cmd("ZREM", trendKey, p.Slug).Err
 	if err != nil {
 		return err
 	}
-	
+
 	c, err := rc.Cmd("ZCOUNT", trendKey, "-inf", "+inf").Int()
 	if err != nil {
-		return fmt.Errorf("error calculating number of articles in tag: %v", err)		
+		return fmt.Errorf("error calculating number of articles in tag: %v", err)
 	}
 	err = rc.Cmd("ZADD", TagZsetByPages, c, tag).Err
 	if err != nil {
-		return fmt.Errorf("error updating count of articles in tag: %v", err)				
+		return fmt.Errorf("error updating count of articles in tag: %v", err)
 	}
-	return nil	
+	return nil
 }
 
 func RegisterPage(p *Page) error {
@@ -251,7 +248,7 @@ func RegisterPage(p *Page) error {
 	}
 	err = rc.Cmd("ZADD", PageZsetByTrend, "NX", now, p.Slug).Err
 	if err != nil {
-		return fmt.Errorf("error adding page to trending pages: %v", err)		
+		return fmt.Errorf("error adding page to trending pages: %v", err)
 	}
 	for _, tag := range p.Tags {
 		err := RegisterPageTag(p, tag)
@@ -284,4 +281,3 @@ func UnregisterPage(p *Page) error {
 	return nil
 
 }
-

@@ -1,21 +1,19 @@
 package icarus
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
-	"encoding/json"
 )
 
-
 type NoSuchPagesError struct {
-	msg string
+	msg   string
 	Slugs []string
 }
 
 func (e *NoSuchPagesError) Error() string {
 	return e.msg
 }
-
 
 // Retrieve a list of slugs from Redis.
 func PagesFromRedis(slugs []string) ([]*Page, error) {
@@ -67,16 +65,15 @@ func PageFromRedis(slug string) (*Page, error) {
 	return pages[0], nil
 }
 
-
 type Page struct {
-	Slug      string `json:"slug"`
-	Tags      []string `json:"tags"`
-	Title     string `json:"title"`
-	Summary   string `json:"summary"`
-	Content   string `json:"content"`
-	Draft     bool   `json:"draft"`
-	PubDateStr   int64 `json:"pub_date"`
-	EditDateStr  int64 `json:"edit_date"`
+	Slug        string   `json:"slug"`
+	Tags        []string `json:"tags"`
+	Title       string   `json:"title"`
+	Summary     string   `json:"summary"`
+	Content     string   `json:"content"`
+	Draft       bool     `json:"draft"`
+	PubDateStr  int64    `json:"pub_date"`
+	EditDateStr int64    `json:"edit_date"`
 }
 
 // Generate the Redis key for this page.

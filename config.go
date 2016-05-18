@@ -5,10 +5,8 @@ import (
 	"fmt"
 )
 
-
-
 type RSSConfig struct {
-	Path string
+	Path  string
 	Title string
 }
 
@@ -17,13 +15,13 @@ func (r *RSSConfig) String() string {
 }
 
 type Config struct {
-	NetLoc    string
-	DomainUrl string
-	RSS       RSSConfig
+	NetLoc      string
+	DomainUrl   string
+	RSS         RSSConfig
 	TemplateDir string
-	StaticDir string
-	ListCount int
-	NumPages  int
+	StaticDir   string
+	ListCount   int
+	NumPages    int
 }
 
 func (c *Config) String() string {

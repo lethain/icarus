@@ -1,20 +1,19 @@
 // TODO: move this into its own module w/its own namespace
 package icarus
 
-
 type PageOpt struct {
-	Num int
-	Offset int
+	Num      int
+	Offset   int
 	Selected bool
 }
 
 type Paginator struct {
-	Pages []PageOpt
+	Pages      []PageOpt
 	NextOffset int
 	PrevOffset int
-	HasNext bool
-	HasPrev bool
-	Show bool
+	HasNext    bool
+	HasPrev    bool
+	Show       bool
 }
 
 /*
@@ -30,7 +29,7 @@ func NewPaginator(offset int, total int, pageSize int, numPages int) Paginator {
 	lastPage := total / pageSize
 	preceeding := (numPages - 1) / 2
 	following := (numPages - 1) / 2
-	if preceeding + following + 1 < numPages {
+	if preceeding+following+1 < numPages {
 		preceeding += 1
 	}
 
@@ -56,7 +55,7 @@ func NewPaginator(offset int, total int, pageSize int, numPages int) Paginator {
 	} else if currPage <= preceeding {
 		start = 0
 		finish = numPages
-	} else if currPage >= lastPage - following {
+	} else if currPage >= lastPage-following {
 		start = lastPage - numPages
 		finish = lastPage
 	}

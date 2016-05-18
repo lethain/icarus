@@ -6,10 +6,9 @@ import (
 )
 
 type Tag struct {
-	Slug string
+	Slug  string
 	Count int
 }
-
 
 func GetAllTags() ([]Tag, error) {
 	rc, err := GetConfiguredRedisClient()
