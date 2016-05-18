@@ -85,7 +85,15 @@ func SlugsForList(list string, offset int, count int, reverse bool) ([]string, e
 	if reverse {
 		cmd = "ZREVRANGE"
 	}
-	return rc.Cmd(cmd, list, offset, count).List()
+	return rc.Cmd(cmd, list, offset, offset+count).List()
+}
+
+func PagesInList(list string) (int, error) {
+	rc, err := GetConfiguredRedisClient()
+	if err != nil {
+		return 0, err
+	}
+	return rc.Cmd("ZCARD", list).Int()
 }
 
 func PagesForList(list string, offset int, count int, reverse bool) ([]*Page, error) {

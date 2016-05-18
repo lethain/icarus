@@ -14,4 +14,17 @@
   {{if .Tags}}<p class="blog-tags">Filed under {{range .Tags }}<span class="blog-tag"><a href="/tags/{{ . }}/">{{ . }}</a></span>{{end}}</p>{{end}}  
 </div>
 {{ end }}
+
+<nav>
+  <ul class="pagination">
+    {{range .Paginator.Pages}}
+    {{if .Selected}}
+    <li class="active"><span>{{.Num}} <span class="sr-only">(current)</span></span></li>
+    {{else}}
+    <li><a href="?offset={{.Offset}}">{{.Num}}</a></li>
+    {{end}}
+    {{end}}
+  </ul>
+</nav>
+
 {{ end }}

@@ -23,6 +23,7 @@ type Config struct {
 	TemplateDir string
 	StaticDir string
 	ListCount int
+	NumPages  int
 }
 
 func (c *Config) String() string {

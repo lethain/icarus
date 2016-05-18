@@ -8,6 +8,7 @@ import (
 	"strings"
 	"text/template"
 	"time"
+	"strconv"
 )
 
 var templateCache map[string]*template.Template
@@ -70,6 +71,20 @@ func makeListHandler(cfg *Config, list string, title string) http.HandlerFunc {
 	handle := func(w http.ResponseWriter, r *http.Request) {
 		// TODO: get this from HTTP request
 		offset := 0
+		offsetStr := r.URL.Query().Get("offset")
+		if offsetStr != "" {
+			o, err := strconv.ParseInt(offsetStr, 10, 32)
+			if err != nil {
+				log.Printf("error parsing offset: %v", err)
+			} else {
+				offset = int(o)
+			}
+		}
+		total, err := PagesInList(list)
+		if err != nil {
+			errorPage(w, r, nil, err)
+			return
+		}		
 		pgs, err := PagesForList(list, offset, cfg.ListCount, true)
 		if err != nil {
 			errorPage(w, r, nil, err)
@@ -81,6 +96,9 @@ func makeListHandler(cfg *Config, list string, title string) http.HandlerFunc {
 			return
 		}
 		params["Pages"] = pgs
+		params["Offset"] = offset
+		params["Total"] = total
+		params["Paginator"] = NewPaginator(offset, total, cfg.ListCount, 10)
 		params["Title"] = title
 		err = renderTemplate(w, "list.html", params)
 		if err != nil {
@@ -95,7 +113,7 @@ func makeListHandler(cfg *Config, list string, title string) http.HandlerFunc {
 // Determine the slug for a request, including defaulting to
 // the latest post if no slug is specified.
 func getSlug(r *http.Request) string {
-	slug := r.URL.Path[1:]
+	slug := r.URL.EscapedPath()[1:]
 	if strings.HasSuffix(slug, "/") {
 		slug = slug[:len(slug)-1]
 	}
@@ -110,6 +128,7 @@ func makePageHandler(cfg *Config, indexHandler http.HandlerFunc) http.HandlerFun
 			indexHandler(w, r)
 			return
 		}
+		log.Printf("skipping default: %v, %T, %v", slug, slug, len(slug))
 		
 		p, err := PageFromRedis(slug)
 		if err != nil {
