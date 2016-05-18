@@ -66,10 +66,50 @@ func defaultParams(cfg *Config, p *Page, r *http.Request) (map[string]interface{
 	return params, nil
 }
 
+func makeTagHandler(cfg *Config) http.HandlerFunc {
+	handle := func(w http.ResponseWriter, r *http.Request) {
+		tag := getSlug(r)[5:]
+		list := fmt.Sprintf(TagPagesZsetByTrend, tag)
+		tagHandler := makeListHandler(cfg, list, fmt.Sprintf("Pages for %v Tag", tag))
+		tagHandler(w, r)
+	}
+	return handle
+}
+
+func makeTagsHandler(cfg *Config, title string) http.HandlerFunc {
+	tagHandler := makeTagHandler(cfg)
+	
+	handle := func(w http.ResponseWriter, r *http.Request) {
+		// this matches /tags/ but also the tag detail page
+		// at /tags/etc , so disambiguate between those
+		// pages here
+		slug := getSlug(r)
+		if slug != "tags" {
+			tagHandler(w, r)
+			return
+		}
+		
+		params, err := defaultParams(cfg, nil, r)
+		if err != nil {
+			errorPage(w, r, nil, err)
+			return
+		}
+		params["Title"] = title
+		params["Tags"] = []string{}
+		err = renderTemplate(w, "list.html", params)
+		if err != nil {
+			errorPage(w, r, nil, err)
+			return
+		}
+
+	}
+	return handle
+
+}
+
 
 func makeListHandler(cfg *Config, list string, title string) http.HandlerFunc {
 	handle := func(w http.ResponseWriter, r *http.Request) {
-		// TODO: get this from HTTP request
 		offset := 0
 		offsetStr := r.URL.Query().Get("offset")
 		if offsetStr != "" {
@@ -84,7 +124,7 @@ func makeListHandler(cfg *Config, list string, title string) http.HandlerFunc {
 		if err != nil {
 			errorPage(w, r, nil, err)
 			return
-		}		
+		}
 		pgs, err := PagesForList(list, offset, cfg.ListCount, true)
 		if err != nil {
 			errorPage(w, r, nil, err)
@@ -95,11 +135,9 @@ func makeListHandler(cfg *Config, list string, title string) http.HandlerFunc {
 			errorPage(w, r, nil, err)
 			return
 		}
-		params["Pages"] = pgs
-		params["Offset"] = offset
-		params["Total"] = total
-		params["Paginator"] = NewPaginator(offset, total, cfg.ListCount, 10)
 		params["Title"] = title
+		params["Pages"] = pgs
+		params["Paginator"] = NewPaginator(offset, total, cfg.ListCount, 10)
 		err = renderTemplate(w, "list.html", params)
 		if err != nil {
 			errorPage(w, r, nil, err)
@@ -128,8 +166,6 @@ func makePageHandler(cfg *Config, indexHandler http.HandlerFunc) http.HandlerFun
 			indexHandler(w, r)
 			return
 		}
-		log.Printf("skipping default: %v, %T, %v", slug, slug, len(slug))
-		
 		p, err := PageFromRedis(slug)
 		if err != nil {
 			errorPage(w, r, p, err)
@@ -166,6 +202,7 @@ func Serve(cfg *Config) {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(cfg.StaticDir))))
 	http.HandleFunc("/list/trending/", makeListHandler(cfg, PageZsetByTrend, "Popular Pages"))
 	http.HandleFunc("/list/recent/", recentHandler)
+	http.HandleFunc("/tags/", makeTagsHandler(cfg, "Tags"))
 	http.HandleFunc("/", makePageHandler(cfg, recentHandler))
 	http.ListenAndServe(cfg.NetLoc, nil)
 }
