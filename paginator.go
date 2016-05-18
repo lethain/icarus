@@ -14,6 +14,7 @@ type Paginator struct {
 	PrevOffset int
 	HasNext bool
 	HasPrev bool
+	Show bool
 }
 
 /*
@@ -33,7 +34,7 @@ func NewPaginator(offset int, total int, pageSize int, numPages int) Paginator {
 		preceeding += 1
 	}
 
-	p := Paginator{Pages: make([]PageOpt, 0)}
+	p := Paginator{Pages: make([]PageOpt, 0), Show: total > pageSize}
 
 	// setup for pagers
 	if currPage > 0 {

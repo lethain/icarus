@@ -7,6 +7,7 @@
 {{ end }}
 
 {{ define "content" }}
+
 {{range .Pages}}
 <div class="blog-post">
   <h2 class="blog-post-title"><a href="/{{ .Slug }}/">{{ .Title }}</a></h2>
@@ -15,6 +16,7 @@
 </div>
 {{ end }}
 
+{{if .Paginator.Show}}
 <nav class="blog-pagination">
   <ul class="pagination">
     {{if .Paginator.HasPrev }}
@@ -36,5 +38,6 @@
     {{end}}    
   </ul>
 </nav>
+{{ end }}
 
 {{ end }}
