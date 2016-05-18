@@ -210,6 +210,15 @@ h6, .h6 {
 }
 
 
+/*
+ * Paginator
+ */
+
+nav.blog-pagination {
+    border-top: 1px solid #428bca;
+    text-align: center;
+    
+}
 
 
 

@@ -15,8 +15,13 @@
 </div>
 {{ end }}
 
-<nav>
+<nav class="blog-pagination">
   <ul class="pagination">
+    {{if .Paginator.HasPrev }}
+    <li>
+      <a href="?offset={{.Paginator.PrevOffset}}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+    </li>
+    {{end}}    
     {{range .Paginator.Pages}}
     {{if .Selected}}
     <li class="active"><span>{{.Num}} <span class="sr-only">(current)</span></span></li>
@@ -24,6 +29,11 @@
     <li><a href="?offset={{.Offset}}">{{.Num}}</a></li>
     {{end}}
     {{end}}
+    {{if .Paginator.HasNext }}
+    <li>
+      <a href="?offset={{.Paginator.NextOffset}}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+    </li>
+    {{end}}    
   </ul>
 </nav>
 

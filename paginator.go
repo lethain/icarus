@@ -10,8 +10,10 @@ type PageOpt struct {
 
 type Paginator struct {
 	Pages []PageOpt
-	Next bool
-	Prev bool
+	NextOffset int
+	PrevOffset int
+	HasNext bool
+	HasPrev bool
 }
 
 /*
@@ -23,14 +25,24 @@ pageSize is the number of items per page.
 numPages is the number of pages to display
 */
 func NewPaginator(offset int, total int, pageSize int, numPages int) Paginator {
-	p := Paginator{Pages: make([]PageOpt, 0)}
-
 	currPage := offset / pageSize
 	lastPage := total / pageSize
 	preceeding := (numPages - 1) / 2
 	following := (numPages - 1) / 2
 	if preceeding + following + 1 < numPages {
 		preceeding += 1
+	}
+
+	p := Paginator{Pages: make([]PageOpt, 0)}
+
+	// setup for pagers
+	if currPage > 0 {
+		p.PrevOffset = (currPage - 1) * pageSize
+		p.HasPrev = true
+	}
+	if currPage != lastPage {
+		p.NextOffset = (currPage + 1) * pageSize
+		p.HasNext = true
 	}
 
 	// determine start and finish based on various
@@ -51,6 +63,6 @@ func NewPaginator(offset int, total int, pageSize int, numPages int) Paginator {
 	// build the PageOpts
 	for i := start; i <= finish; i++ {
 		p.Pages = append(p.Pages, PageOpt{Num: i + 1, Offset: i * pageSize, Selected: i == currPage})
-	}	
+	}
 	return p
 }
