@@ -172,7 +172,11 @@ func makePageHandler(cfg *Config, indexHandler http.HandlerFunc) http.HandlerFun
 		}
 		p, err := PageFromRedis(slug)
 		if err != nil {
-			errorPage(w, r, p, err)
+			if _, ok := err.(*NoSuchPagesError); ok {
+				notFoundPage(w, r, cfg, err)
+			} else {
+				errorPage(w, r, p, err)
+			}
 			return
 		}
 		params, err := defaultParams(cfg, p, r)
@@ -198,6 +202,21 @@ func errorPage(w http.ResponseWriter, r *http.Request, p *Page, err error) {
 	log.Printf("Error opening slug '%s'\n%v\n\n%v", r.URL.Path[1:], err, p)
 	fmt.Fprintf(w, "Error opening slug '%s'\n%v\n\n%v", r.URL.Path[1:], err, p)
 }
+
+func notFoundPage(w http.ResponseWriter, r *http.Request, cfg *Config, err error) {
+	params, err := defaultParams(cfg, nil, r)
+	if err != nil {
+		errorPage(w, r, nil, err)
+		return
+	}
+	err = renderTemplate(w, "404.html", params)
+	if err != nil {
+		errorPage(w, r, nil, err)
+		return
+	}
+
+}
+
 
 func Serve(cfg *Config) {
 	loadTemplates(cfg.TemplateDir)

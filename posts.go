@@ -6,6 +6,17 @@ import (
 	"encoding/json"
 )
 
+
+type NoSuchPagesError struct {
+	msg string
+	Slugs []string
+}
+
+func (e *NoSuchPagesError) Error() string {
+	return e.msg
+}
+
+
 // Retrieve a list of slugs from Redis.
 func PagesFromRedis(slugs []string) ([]*Page, error) {
 	pages := make([]*Page, 0, len(slugs))
@@ -22,10 +33,18 @@ func PagesFromRedis(slugs []string) ([]*Page, error) {
 	if len(keys) == 0 {
 		return []*Page{}, nil
 	}
-	
+
 	raws, err := rc.Cmd("MGET", keys).List()
-	if err != nil {
-		return pages, fmt.Errorf("failed retrieving slugs %v from redis: %v", slugs, err)
+
+	nonEmpty := 0
+	for _, raw := range raws {
+		if raw != "" {
+			nonEmpty += 1
+		}
+	}
+	if err != nil || nonEmpty == 0 {
+		msg := fmt.Sprintf("failed retrieving slugs %v from redis: %v", slugs, err)
+		return pages, &NoSuchPagesError{msg, slugs}
 	}
 
 	for i, raw := range raws {
