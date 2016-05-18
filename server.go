@@ -78,7 +78,7 @@ func makeTagHandler(cfg *Config) http.HandlerFunc {
 
 func makeTagsHandler(cfg *Config, title string) http.HandlerFunc {
 	tagHandler := makeTagHandler(cfg)
-	
+
 	handle := func(w http.ResponseWriter, r *http.Request) {
 		// this matches /tags/ but also the tag detail page
 		// at /tags/etc , so disambiguate between those
@@ -88,15 +88,19 @@ func makeTagsHandler(cfg *Config, title string) http.HandlerFunc {
 			tagHandler(w, r)
 			return
 		}
-		
 		params, err := defaultParams(cfg, nil, r)
 		if err != nil {
 			errorPage(w, r, nil, err)
 			return
 		}
 		params["Title"] = title
-		params["Tags"] = []string{}
-		err = renderTemplate(w, "list.html", params)
+		allTags, err := GetAllTags()
+		if err != nil {
+			errorPage(w, r, nil, err)
+			return
+		}
+		params["Tags"] = allTags
+		err = renderTemplate(w, "tags.html", params)
 		if err != nil {
 			errorPage(w, r, nil, err)
 			return
@@ -202,7 +206,7 @@ func Serve(cfg *Config) {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(cfg.StaticDir))))
 	http.HandleFunc("/list/trending/", makeListHandler(cfg, PageZsetByTrend, "Popular Pages"))
 	http.HandleFunc("/list/recent/", recentHandler)
-	http.HandleFunc("/tags/", makeTagsHandler(cfg, "Tags"))
+	http.HandleFunc("/tags/", makeTagsHandler(cfg, "Tags By Page Count"))
 	http.HandleFunc("/", makePageHandler(cfg, recentHandler))
 	http.ListenAndServe(cfg.NetLoc, nil)
 }

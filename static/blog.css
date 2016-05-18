@@ -209,7 +209,6 @@ h6, .h6 {
     }
 }
 
-
 /*
  * Paginator
  */
@@ -220,7 +219,18 @@ nav.blog-pagination {
     
 }
 
+/*
+ * Tags
+ */
 
+.tags {
+    list-style: none;
+}
+
+.tags .badge {
+    float: right;
+    background-color: #428bca;
+}
 
 /*
  * Footer

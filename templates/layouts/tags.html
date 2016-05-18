@@ -7,10 +7,12 @@
 {{ end }}
 
 {{ define "content" }}
+<ul class="tags">
 {{range .Tags}}
-<div class="blog-post">
-  <p><a href="#">tag</a></p>
-</div>
+<li>
+  <a href="/tags/{{ .Slug }}/">{{ .Slug }}</a>
+  <span class="badge">{{ .Count }}</span>
+</li>
 {{ end }}
-
+</ul>
 {{ end }}
