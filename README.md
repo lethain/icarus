@@ -1,7 +1,16 @@
 
-For reasons which are hard to explain, I've spent a lot of time over the past
-decade building mediocre blog platforms, and <a href="/https://github.com/lethain/icarus">Icarus</a>
-is the next in that glorious heritage.
+Icarus is a minimalistic blog platform for people who want to write Markdown
+or HTML documents in Git and have them served by a minimalistic server which
+still provides the basic nice-to-haves: trending content, full-text search
+and discovering similar content, while comfortably running on a small VPS.
+
+It relies on quite a few opensource projects:
+[Go](https://golang.org/),
+[Redis](http://redis.io/),
+[Bleve](http://www.blevesearch.com/),
+[Bootstrap 3](http://getbootstrap.com/),
+and many others.
+
 
 
 ## Installation
@@ -80,7 +89,7 @@ things running via one of these options:
     # if you did make build
     ./cmd/icarus/icarus
     # if you are making changes during development
-    make run
+    make icarus
 
 You can also pass in `--config path/to/config.json` if you're not running
 it from the `icarus.git` repository (or want to specify a different configuration
@@ -131,6 +140,10 @@ remove content, or you could just use `"draft": true` to remove the indexes
 and then do `redis-cli REM slug.<post-slug>` if you like living on the edge!
 
 ## History
+
+For reasons which are hard to explain, I've spent a lot of time over the past
+decade building mediocre blog platforms, and <a href="/https://github.com/lethain/icarus">Icarus</a>
+is the next in that glorious heritage.
 
 Icarus is a Go reimagining of [Sisyphus](https://github.com/lethain/sisyphus),
 which was my second personal blogging platform, inspired by the many, many
