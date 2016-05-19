@@ -37,7 +37,6 @@
 	  <a class="blog-nav-item{{if eq .Path "list/trending/"}} active{{end}}" href="/list/trending/">Popular</a>
 	  <a class="blog-nav-item{{if eq .Path "list/recent/" "" }} active{{end}}" href="/list/recent/">Recent</a>
 	  <a class="blog-nav-item{{if eq .Path "tags/"}} active{{end}}" href="/tags/">Tags</a>
-	  <a class="blog-nav-item{{if eq .Path "analytics/"}} active{{end}}" href="/analytics/">Analytics</a>
 	  <a class="blog-nav-item" href="/feeds/">RSS</a>
 	</nav>
       </div>
@@ -74,9 +73,10 @@
     </div>
     <footer class="blog-footer">
       <p>All Rights Reserved, Will Larson. 2007 - {{ .Now.Year }}.</p>
-      <p>CSS based on <a href="http://getbootstrap.com">Bootstrap</a>'s blog template.</p>
+      <p><a href="https://github.com/lethain/icarus">Icarus</a> is built with
+	<a href="https://golang.org/" rel="nofollow">Go</a>, <a href="http://getbootstrap.com" rel="nofollow">Bootstrap</a>,
+	<a href="https://github.com/blevesearch/bleve/" rel="nofollow">Bleve</a>, and many more technologies.</p>	
     </footer>
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="/static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script src="/static/rrssb.min.js"></script>

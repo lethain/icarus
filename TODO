@@ -1,14 +1,4 @@
-
 OK, here is some stuff we need to do.
-
-Tomorrow:
-
-1. Analytics
-    1. add analytics to right-rail
-    1. add /analytics/ page
-1. flesh out the footer to include various used technologies, etc
-
-Friday?
 
 1. before rendering markdown, strip out [TOC] (and preceeding
     HR if there is a following HR), since no longer have any
