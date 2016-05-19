@@ -18,8 +18,8 @@ const PageViewPageBucket = "analytics.pv_bucket.%v"
 const HistoricalReferrer = "imported from Google Analytics"
 const DirectReferrer = "DIRECT"
 const PageViewBonus = 60 * 60 * 24
-const DefaultPeriod = 60 * 60
 const RateLimitPeriod = 60
+const DaySeconds = 60 * 60 * 24
 
 var FilteredRefs = []string{
 	"www.google.com",
@@ -107,11 +107,9 @@ func GetIP(r *http.Request) string {
 }
 
 func Track(p *Page, r *http.Request) error {
-	ip := GetIP(r)
 	if !ShouldIgnore(p, r) {
 		rc, err := GetRedisClient()
 		defer PutRedisClient(rc)
-
 		if err != nil {
 			return err
 		}
@@ -124,27 +122,49 @@ func Track(p *Page, r *http.Request) error {
 			if err != nil {
 				return err
 			}
-
 		}
-		err = TrackAnalytics(p, r)
+
+		// tracking referrers
+		referKeys := []string{
+			Referrers,
+			fmt.Sprintf(PageReferrers, p.Slug),
+		}
+		referrer := Referrer(r)
+		for _, key := range referKeys {
+			err := rc.Cmd("ZINCRBY", key, 1, referrer).Err
+			if err != nil {
+				return err
+			}
+		}
+		// total pageviews by user agents
+		err = rc.Cmd("ZINCRBY", UserAgents, 1, r.UserAgent()).Err
 		if err != nil {
 			return err
 		}
-	} else {
-		log.Printf("ignoring page for: %v", p.Slug)
+		// total pageviews by page
+		err = rc.Cmd("ZINCRBY", PageViews, 1, p.Slug).Err
+		if err != nil {
+			return err
+		}
+		// tracking pageviews, bucketed by day
+		bucket := timebucket(DaySeconds)
+		bucketKeys := []string{
+			PageViewBucket,
+			fmt.Sprintf(PageViewPageBucket, p.Slug),
+		}
+		for _, key := range bucketKeys {
+			err := rc.Cmd("ZINCRBY", key, 1, bucket).Err
+			if err != nil {
+				return err
+			}
+		}
+
+
 	}
 	return nil
 }
 
-func TrackAnalytics(p *Page, r *http.Request) error {
-	log.Printf("TrackAnalytics(%v)", p.Slug)
-	return nil
-}
-
-func timebucket(period int) (int, error) {
-	if period == 0 {
-		period = DefaultPeriod
-	}
+func timebucket(period int) int {
 	now := CurrentTimestamp()
-	return int(now / int64(period)), nil
+	return int(now / int64(period))
 }

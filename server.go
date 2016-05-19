@@ -254,7 +254,7 @@ func makePageHandler(cfg *Config, indexHandler http.HandlerFunc) http.HandlerFun
 		}
 		err = Track(p, r)
 		if err != nil {
-			errorPage(w, r, cfg, p, err)
+			log.Printf("error tracking page: %v", err)
 			return
 		}
 	}

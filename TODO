@@ -4,11 +4,8 @@ OK, here is some stuff we need to do.
 Tomorrow:
 
 1. Analytics
-    1. add ip rate-limiting logic to all analytics
-    1. start tracking analytics
     1. add analytics to right-rail
     1. add /analytics/ page
-    2. redis docs: http://redis.io/commands/
 1. flesh out the footer to include various used technologies, etc
 
 Friday?
