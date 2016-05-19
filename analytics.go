@@ -5,10 +5,10 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"strings"
 )
 
-
-const AnalyticsBackoff = "analytics.backoff.%v.%v"
+const AnalyticsBackoff = "analytics.backoff.%v"
 const Referrers = "analytics.refer"
 const PageReferrers = "analytics.refer.%v"
 const UserAgents = "analytics.useragent"
@@ -19,7 +19,7 @@ const HistoricalReferrer = "imported from Google Analytics"
 const DirectReferrer = "DIRECT"
 const PageViewBonus = 60 * 60 * 24
 const DefaultPeriod = 60 * 60
-
+const RateLimitPeriod = 60
 
 var FilteredRefs = []string{
 	"www.google.com",
@@ -32,37 +32,62 @@ var FilteredRefs = []string{
 var BotAgents = []string{
 	"-",
 	"facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
-	"Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)",
-	"Disqus/1.0",
-	"Sogou web spider/4.0(+http://www.sogou.com/docs/help/webmasters.htm#07)",
-	"Baiduspider+(+http://www.baidu.com/search/spider.htm)",
-	"Baiduspider+(+http://www.baidu.jp/spider/)",
+	"mozilla/5.0 (compatible; yahoo! slurp; http://help.yahoo.com/help/us/ysearch/slurp)",
+	"disqus/1.0",
+	"sogou web spider/4.0(+http://www.sogou.com/docs/help/webmasters.htm#07)",
+	"baiduspider+(+http://www.baidu.com/search/spider.htm)",
+	"baiduspider+(+http://www.baidu.jp/spider/)",
 	"ichiro/4.0 (http://help.goo.ne.jp/door/crawler.html)",
-	"Java/1.6.0_24",
-	"Python-urllib/2.6",
+	"java/1.6.0_24",
+	"python-urllib/2.6",
 	"ia_archiver (+http://www.alexa.com/site/help/webmasters; crawler@alexa.com)",
-	"Mozilla/5.0 (compatible; TopBlogsInfo/2.0; +topblogsinfo@gmail.com)",
-	"Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)",
+	"mozilla/5.0 (compatible; topblogsInfo/2.0; +topblogsinfo@gmail.com)",
+	"mozilla/5.0 (compatible; baiduspider/2.0; +http://www.baidu.com/search/spider.html)",
 }
 
 func CurrentTimestamp() int64 {
 	return time.Now().Unix()
 }
 
-func ShouldIgnore(p *Page, r *http.Request) bool {
-	/*
-	   if not slug.endswith('.png') and \
-	           useragent not in BOT_AGENTS and \
-	           'subscribers' not in lowered and \
-	           'bot' not in lowered and \
-	           not useragent.startswith('Reeder'):
-	*/
-	// TODO: implement
-	if p.Draft {
-		log.Printf("ignoring %v because draft", p.Slug)
+func IsRateLimited(key string) bool {
+	script := `local current
+current = redis.call("incr",KEYS[1])
+if tonumber(current) == 1 then
+    redis.call("expire", KEYS[1], 60)
+end
+return current
+`
+	rc, err := GetRedisClient()
+	defer PutRedisClient(rc)
+	if err != nil {
+		log.Printf("error getting redis client: %v", err)
 		return true
 	}
-	return false
+	ratelimited, err := rc.Cmd("EVAL", script, 2, key, RateLimitPeriod).Int()
+	if err != nil {
+		log.Printf("error checking ratelimit: %v", err)
+		return true
+	}
+	return ratelimited != 1
+}
+
+func ShouldIgnore(p *Page, r *http.Request) bool {
+	if strings.HasSuffix(p.Slug, ".png") || strings.HasSuffix(p.Slug, ".ico") {
+		return true
+	}
+	ua := r.UserAgent()
+	lua := strings.ToLower(ua)
+	for _, botAgent := range BotAgents {
+		if botAgent == lua {
+			return true
+		}
+	}
+	if p.Draft || strings.HasPrefix(lua, "reeder") || strings.Contains(lua, "bot") {
+		return true
+	}
+	ip := GetIP(r)
+	rlKey := fmt.Sprintf(AnalyticsBackoff, ip)
+	return IsRateLimited(rlKey)
 }
 
 func Referrer(r *http.Request) string {
@@ -71,7 +96,18 @@ func Referrer(r *http.Request) string {
 	return DirectReferrer
 }
 
+func GetIP(r *http.Request) string {
+	if r.Header.Get("X-Forwarded-For") != "" {
+		return r.Header.Get("X-Forwarded-For")
+	}
+	if r.Header.Get("X-Real-IP") != "" {
+		return r.Header.Get("X-Real-IP")
+	}
+	return strings.Split(r.RemoteAddr, ":")[0]
+}
+
 func Track(p *Page, r *http.Request) error {
+	ip := GetIP(r)
 	if !ShouldIgnore(p, r) {
 		rc, err := GetRedisClient()
 		defer PutRedisClient(rc)
@@ -94,6 +130,8 @@ func Track(p *Page, r *http.Request) error {
 		if err != nil {
 			return err
 		}
+	} else {
+		log.Printf("ignoring page for: %v", p.Slug)
 	}
 	return nil
 }
