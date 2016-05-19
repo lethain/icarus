@@ -33,3 +33,4 @@ Issues:
 
 1. search results return max 10... need to dig into
     http://www.blevesearch.com/ a bit more
+2. add unindex support for search for removing pages
