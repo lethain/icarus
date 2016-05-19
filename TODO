@@ -1,16 +1,31 @@
 
-OK, here is some stuff we need to do:
+OK, here is some stuff we need to do.
 
+Tomorrow:
+
+1. implement search via http://www.blevesearch.com/
 1. Analytics
     1. add ip rate-limiting logic to all analytics
     1. start tracking analytics
     1. add analytics to right-rail
     1. add /analytics/ page
+    2. redis docs: http://redis.io/commands/
+
+Friday?
+
 1. before rendering markdown, strip out [TOC] (and preceeding
     HR if there is a following HR), since no longer have any
     support for that...
 1. figure out code highlighting, both for rendering the already
     rendered pygments stuff, but also for rendering new articles
     with code
-1. implement search ;-)
+1. Take a look at:
+    1. https://github.com/cespare/pastedown/commit/b6a75633f940eefcf91005b00cd57f7cf70dde77
+    2. https://github.com/cespare/blackfriday/commit/5e95b16fff240cd1b2ae69578de7885db3901a60
+
+Deployment
+
+1. probably move from flags to json config for configuration
+    (just too many flags for CLI IMHO)
+1. saltstack for setting this all up
 1. add css compaction/compression/merging

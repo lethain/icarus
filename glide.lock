@@ -1,9 +1,9 @@
-hash: ef8a7de88069d4f422f1f5ea988736d8ff6e3b6c67446fa92eda95acd3393375
-updated: 2016-05-18T19:18:34.398179694-07:00
+hash: 88ab1d75301911091a4e271667506efe06447b557b3947c71a0fc21b45d2c6fa
+updated: 2016-05-19T09:32:24.931391053-07:00
 imports:
+- name: github.com/blevesearch/bleve
+  version: d8ccda94f1afb6f04eb11e31c118cacaed38c5cf
 - name: github.com/gorilla/feeds
-  version: 441264de03a8117ed530ae8e049d8f601a33a099
-- name: github.com/gorilla/feeds.git
   version: 441264de03a8117ed530ae8e049d8f601a33a099
 - name: github.com/mediocregopher/radix.v2
   version: 74e50e64194d2d2f4836212451c28b127f9d7fa1
