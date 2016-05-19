@@ -237,7 +237,12 @@ func errorPage(w http.ResponseWriter, r *http.Request, cfg *Config, p *Page, err
 		"Query":     "",
 	}
 
-	log.Printf("Error opening slug '%s'\n%v\n\n%v", r.URL.Path[1:], err, p)
+	slug := ""
+	if p != nil {
+		slug = p.Slug
+	}
+
+	log.Printf("Error opening slug '%s'\n%v\n\n%v", r.URL.Path[1:], err, slug)
 	err = renderTemplate(w, "500.html", params)
 	if err != nil {
 		fmt.Fprint(w, "Things are going very poorly. Please check back later.")

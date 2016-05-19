@@ -5,8 +5,8 @@
 	"domain": "lethain.com"
     },
     "rss": {
-	"path": "",
-	"title": ""
+	"path": "/feeds/",
+	"title": "Recent Posts from Irrational Exuberance"
     },
     "blog": {
 	"name": "Irrational Exuberance",

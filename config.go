@@ -28,8 +28,8 @@ type BlogConfig struct {
 	Name             string
 	ResultsPerPage   int `json:"results_per_page"`
 	PagesInPaginator int `json:"pages_in_paginator"`
-	TemplateDir      string
-	StaticDir        string
+	TemplateDir      string `json:"template_dir"`
+	StaticDir        string `json:"static_dir"`
 }
 
 type RedisConfig struct {
