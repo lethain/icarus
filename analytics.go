@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 	"strings"
+	"time"
 )
 
 const AnalyticsBackoff = "analytics.backoff.%v"
@@ -158,7 +158,6 @@ func Track(p *Page, r *http.Request) error {
 				return err
 			}
 		}
-
 
 	}
 	return nil

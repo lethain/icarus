@@ -2,9 +2,9 @@ package icarus
 
 import (
 	"fmt"
+	"html"
 	"log"
 	"net/http"
-	"html"
 
 	"strconv"
 	"strings"
