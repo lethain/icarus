@@ -2,9 +2,9 @@
 package icarus
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"encoding/json"
 )
 
 type RSSConfig struct {
@@ -16,8 +16,8 @@ type RSSConfig struct {
 // 	NetLoc      string `json:"netloc"`
 //	DomainUrl   string `json:"domain"`
 type ServerConfig struct {
-	Loc string
-	Proto string
+	Loc    string
+	Proto  string
 	Domain string
 }
 
@@ -26,15 +26,15 @@ type ServerConfig struct {
 // .NumPages -> .Blog.PagesInPaginator
 type BlogConfig struct {
 	Name             string
-	ResultsPerPage   int `json:"results_per_page"`
-	PagesInPaginator int `json:"pages_in_paginator"`
+	ResultsPerPage   int    `json:"results_per_page"`
+	PagesInPaginator int    `json:"pages_in_paginator"`
 	TemplateDir      string `json:"template_dir"`
 	StaticDir        string `json:"static_dir"`
 }
 
 type RedisConfig struct {
-	Loc string
-	Proto string
+	Loc      string
+	Proto    string
 	PoolSize int
 }
 

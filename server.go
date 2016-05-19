@@ -267,7 +267,7 @@ func Serve(cfg *Config) {
 	err := ConfigTemplates(cfg)
 	if err != nil {
 		log.Fatalf("failed configuring templates: %v", err)
-	}	
+	}
 	err = ConfigRedis(cfg)
 	if err != nil {
 		log.Fatalf("failed configuring redis: %v", err)
@@ -275,7 +275,7 @@ func Serve(cfg *Config) {
 	err = ConfigSearch(cfg)
 	if err != nil {
 		log.Fatalf("failed configuring search: %v", err)
-	}	
+	}
 
 	recentHandler := makeListHandler(cfg, PageZsetByTime, "Recent Pages")
 
@@ -287,4 +287,3 @@ func Serve(cfg *Config) {
 	http.HandleFunc("/", makePageHandler(cfg, recentHandler))
 	http.ListenAndServe(cfg.Server.Loc, nil)
 }
-

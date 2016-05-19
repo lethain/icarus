@@ -1,8 +1,8 @@
 package icarus
 
 import (
-	"github.com/mediocregopher/radix.v2/redis"
 	"github.com/mediocregopher/radix.v2/pool"
+	"github.com/mediocregopher/radix.v2/redis"
 
 	"log"
 )
@@ -21,7 +21,7 @@ func ConfigRedis(cfg *Config) error {
 	}
 	if cfg.Redis.PoolSize != 0 {
 		poolSize = cfg.Redis.PoolSize
-	}	
+	}
 	var err error
 	redisPool, err = pool.New(redisProto, redisLocation, poolSize)
 	return err
@@ -37,6 +37,6 @@ func GetRedisClient() (*redis.Client, error) {
 func PutRedisClient(rc *redis.Client) {
 	if redisPool == nil {
 		log.Fatal("must ConfigRedis before returning clients")
-	}	
+	}
 	redisPool.Put(rc)
 }

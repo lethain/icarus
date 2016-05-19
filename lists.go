@@ -3,8 +3,8 @@ package icarus
 import (
 	"fmt"
 	"log"
-	"strconv"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -79,7 +79,7 @@ func Referrer(r *http.Request) string {
 func SlugsForList(list string, offset int, count int, reverse bool) ([]string, error) {
 	rc, err := GetRedisClient()
 	defer PutRedisClient(rc)
-	
+
 	if err != nil {
 		return []string{}, err
 	}
@@ -93,7 +93,7 @@ func SlugsForList(list string, offset int, count int, reverse bool) ([]string, e
 func PagesInList(list string) (int, error) {
 	rc, err := GetRedisClient()
 	defer PutRedisClient(rc)
-	
+
 	if err != nil {
 		return 0, err
 	}
@@ -119,7 +119,7 @@ func Surrounding(p *Page, num int, reverse bool) ([]*Page, error) {
 	}
 	rc, err := GetRedisClient()
 	defer PutRedisClient(rc)
-	
+
 	if err != nil {
 		return []*Page{}, err
 	}
@@ -157,7 +157,7 @@ func SimilarPages(p *Page, offset int, count int) ([]*Page, error) {
 	// the highest scoring pages
 	rc, err := GetRedisClient()
 	defer PutRedisClient(rc)
-	
+
 	if err != nil {
 		return []*Page{}, err
 	}
@@ -186,7 +186,7 @@ func Track(p *Page, r *http.Request) error {
 	if !ShouldIgnore(p, r) {
 		rc, err := GetRedisClient()
 		defer PutRedisClient(rc)
-		
+
 		if err != nil {
 			return err
 		}
@@ -234,7 +234,7 @@ func timebucket(period int) (int, error) {
 func RegisterPageTag(p *Page, tag string) error {
 	rc, err := GetRedisClient()
 	defer PutRedisClient(rc)
-	
+
 	if err != nil {
 		return err
 	}
@@ -264,7 +264,7 @@ func RegisterPageTag(p *Page, tag string) error {
 func UnregisterPageTag(p *Page, tag string) error {
 	rc, err := GetRedisClient()
 	defer PutRedisClient(rc)
-	
+
 	if err != nil {
 		return err
 	}
@@ -295,7 +295,7 @@ func RegisterPage(p *Page) error {
 	now := p.PubDate().Unix()
 	rc, err := GetRedisClient()
 	defer PutRedisClient(rc)
-	
+
 	if err != nil {
 		return err
 	}
@@ -320,7 +320,7 @@ func RegisterPage(p *Page) error {
 func UnregisterPage(p *Page) error {
 	rc, err := GetRedisClient()
 	defer PutRedisClient(rc)
-	
+
 	if err != nil {
 		return err
 	}

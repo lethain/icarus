@@ -4,10 +4,8 @@ import (
 	"github.com/blevesearch/bleve"
 )
 
-
 var searchDir = "searchIndex/"
 var searchIndex bleve.Index
-
 
 func ConfigSearch(cfg *Config) error {
 	// TODO: override searchdir from config

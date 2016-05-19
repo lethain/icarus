@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
 	"text/template"
-	"path/filepath"		
 )
 
 var templateCache map[string]*template.Template
-
 
 func renderTemplate(w http.ResponseWriter, name string, data map[string]interface{}) error {
 	tmpl, ok := templateCache[name]
@@ -23,7 +22,7 @@ func renderTemplate(w http.ResponseWriter, name string, data map[string]interfac
 
 func ConfigTemplates(cfg *Config) error {
 	templatePath := cfg.Blog.TemplateDir
-	
+
 	if templateCache == nil {
 		templateCache = make(map[string]*template.Template)
 	}
@@ -44,4 +43,3 @@ func ConfigTemplates(cfg *Config) error {
 	}
 	return nil
 }
-
