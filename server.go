@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"path/filepath"
+
 	"strconv"
 	"strings"
-	"text/template"
+
 	"time"
 )
 
-var templateCache map[string]*template.Template
+// TODO: move this to Config
 const PagesInModules = 3
 
 func buildSidebar(cfg *Config, p *Page) (map[string]interface{}, error) {
@@ -118,7 +118,7 @@ func makeTagsHandler(cfg *Config, title string) http.HandlerFunc {
 
 func makeFeedsHandler(cfg *Config) http.HandlerFunc {
 	handle := func(w http.ResponseWriter, r *http.Request) {
-		pgs, err := PagesForList(PageZsetByTime, 0, cfg.ListCount, true)
+		pgs, err := PagesForList(PageZsetByTime, 0, cfg.Blog.ResultsPerPage, true)
 		if err != nil {
 			errorPage(w, r, cfg, nil, err)
 			return
@@ -155,7 +155,7 @@ func makeListHandler(cfg *Config, list string, title string) http.HandlerFunc {
 			errorPage(w, r, cfg, nil, err)
 			return
 		}
-		pgs, err := PagesForList(list, offset, cfg.ListCount, true)
+		pgs, err := PagesForList(list, offset, cfg.Blog.ResultsPerPage, true)
 		if err != nil {
 			errorPage(w, r, cfg, nil, err)
 			return
@@ -167,7 +167,7 @@ func makeListHandler(cfg *Config, list string, title string) http.HandlerFunc {
 		}
 		params["Title"] = title
 		params["Pages"] = pgs
-		params["Paginator"] = NewPaginator(offset, total, cfg.ListCount, 10)
+		params["Paginator"] = NewPaginator(offset, total, cfg.Blog.ResultsPerPage, cfg.Blog.PagesInPaginator)
 		err = renderTemplate(w, "list.html", params)
 		if err != nil {
 			errorPage(w, r, cfg, nil, err)
@@ -259,51 +259,27 @@ func notFoundPage(w http.ResponseWriter, r *http.Request, cfg *Config, err error
 }
 
 func Serve(cfg *Config) {
-	loadTemplates(cfg.TemplateDir)
-	err := ConfigRedis(cfg)
+	err := ConfigTemplates(cfg)
 	if err != nil {
-		log.Fatalf("failed connecting to redis: %v", err)
+		log.Fatalf("failed configuring templates: %v", err)
+	}	
+	err = ConfigRedis(cfg)
+	if err != nil {
+		log.Fatalf("failed configuring redis: %v", err)
 	}
+	err = ConfigSearch(cfg)
+	if err != nil {
+		log.Fatalf("failed configuring search: %v", err)
+	}	
 
 	recentHandler := makeListHandler(cfg, PageZsetByTime, "Recent Pages")
 
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(cfg.StaticDir))))
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(cfg.Blog.StaticDir))))
 	http.HandleFunc("/list/trending/", makeListHandler(cfg, PageZsetByTrend, "Popular Pages"))
 	http.HandleFunc("/list/recent/", recentHandler)
 	http.HandleFunc("/tags/", makeTagsHandler(cfg, "Tags By Page Count"))
 	http.HandleFunc("/feeds/", makeFeedsHandler(cfg))
 	http.HandleFunc("/", makePageHandler(cfg, recentHandler))
-	http.ListenAndServe(cfg.NetLoc, nil)
+	http.ListenAndServe(cfg.Server.Loc, nil)
 }
 
-func renderTemplate(w http.ResponseWriter, name string, data map[string]interface{}) error {
-	tmpl, ok := templateCache[name]
-	if !ok {
-		return fmt.Errorf("template %s does not exist", name)
-	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	return tmpl.ExecuteTemplate(w, "base", data)
-}
-
-func loadTemplates(templatePath string) {
-	if templateCache == nil {
-		templateCache = make(map[string]*template.Template)
-	}
-
-	layouts, err := filepath.Glob(templatePath + "layouts/*.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	includes, err := filepath.Glob(templatePath + "includes/*.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, layout := range layouts {
-		files := append(includes, layout)
-		log.Printf("loading and composing templates for %v : %v\n", filepath.Base(layout), files)
-
-		templateCache[filepath.Base(layout)] = template.Must(template.ParseFiles(files...))
-	}
-}

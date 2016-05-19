@@ -9,7 +9,7 @@ var searchDir = "searchIndex/"
 var searchIndex bleve.Index
 
 
-func ConfigureSearch(cfg *Config) error {
+func ConfigSearch(cfg *Config) error {
 	// TODO: override searchdir from config
 	idx, err := bleve.Open(searchDir)
 	if err != nil {
@@ -22,8 +22,6 @@ func ConfigureSearch(cfg *Config) error {
 	searchIndex = idx
 	return nil
 }
-
-
 
 func IndexPage(p *Page) error {
 	return IndexPages([]*Page{p})

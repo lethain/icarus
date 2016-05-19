@@ -8,8 +8,8 @@ import (
 func BuildAtomFeed(cfg *Config, ps []*Page) (*feeds.Feed, error) {
 	now := time.Now()
 	feed := &feeds.Feed{
-		Title: cfg.BlogName,
-		Link: &feeds.Link{Href:cfg.DomainUrl + "/"},
+		Title: cfg.Blog.Name,
+		Link: &feeds.Link{Href:cfg.BaseURL()},
 		Created: now,
 		Items: []*feeds.Item{},
 	}
@@ -19,7 +19,7 @@ func BuildAtomFeed(cfg *Config, ps []*Page) (*feeds.Feed, error) {
 			Title: p.Title,
 			Description: p.Content,
 			Created: p.PubDate(),
-			Link: &feeds.Link{Href:cfg.DomainUrl + "/" + p.Slug + "/"},			
+			Link: &feeds.Link{Href:cfg.BaseURL() + p.Slug + "/"},
 		})
 	}
 	return feed, nil

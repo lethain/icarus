@@ -6,6 +6,9 @@
 *#
 .#*
 
+# Storage
+searchIndex/
+
 # Vendoring
 vendor/
 

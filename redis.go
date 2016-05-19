@@ -8,14 +8,20 @@ import (
 )
 
 var redisProto = "tcp"
-var redisLocation = "127.0.0.1:6379"
+var redisLocation = "localhost:6379"
 var poolSize = 10
 var redisPool *pool.Pool
 
 func ConfigRedis(cfg *Config) error {
-	if cfg.RedisLoc != "" {
-		redisLocation = cfg.RedisLoc
+	if cfg.Redis.Loc != "" {
+		redisLocation = cfg.Redis.Loc
 	}
+	if cfg.Redis.Proto != "" {
+		redisProto = cfg.Redis.Proto
+	}
+	if cfg.Redis.PoolSize != 0 {
+		poolSize = cfg.Redis.PoolSize
+	}	
 	var err error
 	redisPool, err = pool.New(redisProto, redisLocation, poolSize)
 	return err
