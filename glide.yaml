@@ -5,3 +5,4 @@ import:
 - package: github.com/shurcooL/sanitized_anchor_name
 - package: github.com/gorilla/feeds
 - package: github.com/blevesearch/bleve
+- package: github.com/blevesearch/go-porterstemmer

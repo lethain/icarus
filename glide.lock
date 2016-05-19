@@ -1,8 +1,51 @@
-hash: 88ab1d75301911091a4e271667506efe06447b557b3947c71a0fc21b45d2c6fa
-updated: 2016-05-19T09:32:24.931391053-07:00
+hash: 7794d61fa452cc2d173cd7b71f3d797585f587211ecca38d78ea0881b8b0a2b4
+updated: 2016-05-19T09:47:35.759068207-07:00
 imports:
 - name: github.com/blevesearch/bleve
   version: d8ccda94f1afb6f04eb11e31c118cacaed38c5cf
+  subpackages:
+  - analysis
+  - analysis/analyzers/standard_analyzer
+  - analysis/byte_array_converters/json
+  - analysis/datetime_parsers/datetime_optional
+  - document
+  - index
+  - index/firestorm
+  - index/store
+  - index/store/boltdb
+  - index/store/gtreap
+  - index/upside_down
+  - numeric_util
+  - registry
+  - search
+  - search/collectors
+  - search/facets
+  - search/highlight
+  - search/highlight/highlighters/html
+  - search/searchers
+  - analysis/language/en
+  - analysis/token_filters/lower_case_filter
+  - analysis/tokenizers/unicode
+  - analysis/datetime_parsers/flexible_go
+  - search/highlight/fragment_formatters/html
+  - search/highlight/fragmenters/simple
+  - search/highlight/highlighters/simple
+  - search/scorers
+  - analysis/token_filters/porter
+  - analysis/token_filters/stop_tokens_filter
+- name: github.com/blevesearch/go-porterstemmer
+  version: 23a2c8e5cf1f380f27722c6d2ae8896431dc7d0e
+- name: github.com/blevesearch/segment
+  version: db70c57796cc8c310613541dfade3dce627d09c7
+  repo: https://github.com/blevesearch/segment
+- name: github.com/boltdb/bolt
+  version: 144418e1475d8bf7abbdc48583500f1a20c62ea7
+  repo: https://github.com/boltdb/bolt
+- name: github.com/golang/protobuf
+  version: 655cdfa588ea190e901bc5590e65d5621688847c
+  repo: https://github.com/golang/protobuf
+  subpackages:
+  - proto
 - name: github.com/gorilla/feeds
   version: 441264de03a8117ed530ae8e049d8f601a33a099
 - name: github.com/mediocregopher/radix.v2
@@ -14,4 +57,19 @@ imports:
   version: 2004188462c3946efefbdcd91aa83e49b4175bfb
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
+- name: github.com/steveyen/gtreap
+  version: 0abe01ef9be25c4aedc174758ec2d917314d6d70
+  repo: https://github.com/steveyen/gtreap
+- name: github.com/willf/bitset
+  version: 2e6e8094ef4745224150c88c16191c7dceaad16f
+  repo: https://github.com/willf/bitset
+- name: golang.org/x/net
+  version: e45385e9b226f570b1f086bf287b25d3d4117776
+  repo: https://go.googlesource.com/net
+  subpackages:
+  - context
+- name: golang.org/x/sys
+  version: d4feaf1a7e61e1d9e79e6c4e76c6349e9cab0a03
+  subpackages:
+  - unix
 devImports: []

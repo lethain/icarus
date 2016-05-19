@@ -26,7 +26,7 @@ func PagesFromRedis(slugs []string) ([]*Page, error) {
 	}
 	rc, err := GetRedisClient()
 	defer PutRedisClient(rc)
-	
+
 	if err != nil {
 		return pages, fmt.Errorf("failed to connect to redis: %v", err)
 	}
@@ -87,7 +87,7 @@ func (p *Page) Key() string {
 func (p *Page) Sync() error {
 	rc, err := GetRedisClient()
 	defer PutRedisClient(rc)
-	
+
 	if err != nil {
 		return fmt.Errorf("failed connecting to redis: %v", err)
 	}
@@ -104,8 +104,17 @@ func (p *Page) Sync() error {
 		if err != nil {
 			return err
 		}
+		err = IndexPage(p)
+		if err != nil {
+			return err
+		}
+
 	} else {
 		err := UnregisterPage(p)
+		if err != nil {
+			return err
+		}
+		err = UnindexPage(p)
 		if err != nil {
 			return err
 		}

@@ -43,7 +43,7 @@ func main() {
 		pages = append(pages, page)
 	}
 
-	log.Printf("loaded %v pages, now loading them into redis", len(pages))
+	log.Printf("read %v pages from disk, now loading them into Icarus", len(pages))
 
 	for _, page := range pages {
 		err := page.Sync()

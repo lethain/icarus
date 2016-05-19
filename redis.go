@@ -2,7 +2,9 @@ package icarus
 
 import (
 	"github.com/mediocregopher/radix.v2/redis"
-	"github.com/mediocregopher/radix.v2/pool"	
+	"github.com/mediocregopher/radix.v2/pool"
+
+	"log"
 )
 
 var redisProto = "tcp"
@@ -20,9 +22,15 @@ func ConfigRedis(cfg *Config) error {
 }
 
 func GetRedisClient() (*redis.Client, error) {
+	if redisPool == nil {
+		log.Fatal("must ConfigRedis before retrieving clients")
+	}
 	return redisPool.Get()
 }
 
 func PutRedisClient(rc *redis.Client) {
+	if redisPool == nil {
+		log.Fatal("must ConfigRedis before returning clients")
+	}	
 	redisPool.Put(rc)
 }
