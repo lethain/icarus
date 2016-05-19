@@ -238,6 +238,11 @@ func notFoundPage(w http.ResponseWriter, r *http.Request, cfg *Config, err error
 
 func Serve(cfg *Config) {
 	loadTemplates(cfg.TemplateDir)
+	err := ConfigRedis(cfg)
+	if err != nil {
+		log.Fatalf("failed connecting to redis: %v", err)
+	}
+	
 	recentHandler := makeListHandler(cfg, PageZsetByTime, "Recent Pages")
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(cfg.StaticDir))))

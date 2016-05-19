@@ -11,7 +11,9 @@ type Tag struct {
 }
 
 func GetAllTags() ([]Tag, error) {
-	rc, err := GetConfiguredRedisClient()
+	rc, err := GetRedisClient()
+	defer PutRedisClient(rc)
+	
 	if err != nil {
 		return []Tag{}, err
 	}

@@ -22,9 +22,10 @@ type Config struct {
 	StaticDir   string
 	ListCount   int
 	NumPages    int
+	RedisLoc    string
 }
 
 func (c *Config) String() string {
-	return fmt.Sprintf("Config(NetLoc: %v, DomainUrl: %v, TemplateDir: %v, StaticDir: %v, RSS: %v",
-		c.NetLoc, c.DomainUrl, c.TemplateDir, c.StaticDir, c.RSS.String())
+	return fmt.Sprintf("Config(NetLoc: %v, RedisLoc: %v, DomainUrl: %v, TemplateDir: %v, StaticDir: %v, RSS: %v",
+		c.NetLoc, c.RedisLoc, c.DomainUrl, c.TemplateDir, c.StaticDir, c.RSS.String())
 }

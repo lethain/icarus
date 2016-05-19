@@ -77,7 +77,9 @@ func Referrer(r *http.Request) string {
 }
 
 func SlugsForList(list string, offset int, count int, reverse bool) ([]string, error) {
-	rc, err := GetConfiguredRedisClient()
+	rc, err := GetRedisClient()
+	defer PutRedisClient(rc)
+	
 	if err != nil {
 		return []string{}, err
 	}
@@ -89,7 +91,9 @@ func SlugsForList(list string, offset int, count int, reverse bool) ([]string, e
 }
 
 func PagesInList(list string) (int, error) {
-	rc, err := GetConfiguredRedisClient()
+	rc, err := GetRedisClient()
+	defer PutRedisClient(rc)
+	
 	if err != nil {
 		return 0, err
 	}
@@ -113,7 +117,9 @@ func Surrounding(p *Page, num int, reverse bool) ([]*Page, error) {
 		cmd = "ZREVRANGEBYSCORE"
 		end = "-inf"
 	}
-	rc, err := GetConfiguredRedisClient()
+	rc, err := GetRedisClient()
+	defer PutRedisClient(rc)
+	
 	if err != nil {
 		return []*Page{}, err
 	}
@@ -149,7 +155,9 @@ func SimilarPages(p *Page, offset int, count int) ([]*Page, error) {
 	// relying on articles appearing in multiple tags
 	// having their scored summed such that they are
 	// the highest scoring pages
-	rc, err := GetConfiguredRedisClient()
+	rc, err := GetRedisClient()
+	defer PutRedisClient(rc)
+	
 	if err != nil {
 		return []*Page{}, err
 	}
@@ -176,7 +184,9 @@ func SimilarPages(p *Page, offset int, count int) ([]*Page, error) {
 
 func Track(p *Page, r *http.Request) error {
 	if !ShouldIgnore(p, r) {
-		rc, err := GetConfiguredRedisClient()
+		rc, err := GetRedisClient()
+		defer PutRedisClient(rc)
+		
 		if err != nil {
 			return err
 		}
@@ -222,7 +232,9 @@ func timebucket(period int) (int, error) {
 }
 
 func RegisterPageTag(p *Page, tag string) error {
-	rc, err := GetConfiguredRedisClient()
+	rc, err := GetRedisClient()
+	defer PutRedisClient(rc)
+	
 	if err != nil {
 		return err
 	}
@@ -250,7 +262,9 @@ func RegisterPageTag(p *Page, tag string) error {
 }
 
 func UnregisterPageTag(p *Page, tag string) error {
-	rc, err := GetConfiguredRedisClient()
+	rc, err := GetRedisClient()
+	defer PutRedisClient(rc)
+	
 	if err != nil {
 		return err
 	}
@@ -279,7 +293,9 @@ func UnregisterPageTag(p *Page, tag string) error {
 
 func RegisterPage(p *Page) error {
 	now := p.PubDate().Unix()
-	rc, err := GetConfiguredRedisClient()
+	rc, err := GetRedisClient()
+	defer PutRedisClient(rc)
+	
 	if err != nil {
 		return err
 	}
@@ -302,7 +318,9 @@ func RegisterPage(p *Page) error {
 }
 
 func UnregisterPage(p *Page) error {
-	rc, err := GetConfiguredRedisClient()
+	rc, err := GetRedisClient()
+	defer PutRedisClient(rc)
+	
 	if err != nil {
 		return err
 	}

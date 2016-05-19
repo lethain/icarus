@@ -24,7 +24,9 @@ func PagesFromRedis(slugs []string) ([]*Page, error) {
 		pages = append(pages, p)
 		keys = append(keys, p.Key())
 	}
-	rc, err := GetConfiguredRedisClient()
+	rc, err := GetRedisClient()
+	defer PutRedisClient(rc)
+	
 	if err != nil {
 		return pages, fmt.Errorf("failed to connect to redis: %v", err)
 	}
@@ -83,7 +85,9 @@ func (p *Page) Key() string {
 
 // Synchronize this page to Redis.
 func (p *Page) Sync() error {
-	rc, err := GetConfiguredRedisClient()
+	rc, err := GetRedisClient()
+	defer PutRedisClient(rc)
+	
 	if err != nil {
 		return fmt.Errorf("failed connecting to redis: %v", err)
 	}

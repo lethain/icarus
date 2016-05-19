@@ -6,8 +6,8 @@ OK, here is some stuff we need to do:
     1. start tracking analytics
     1. add analytics to right-rail
     1. add /analytics/ page
+1. RSS - use https://github.com/gorilla/feeds    
 1. implement search ;-)
-1. use a redis client pool instead of initializing them everywhere
 1. before rendering markdown, strip out [TOC] (and preceeding
     HR if there is a following HR), since no longer have any
     support for that...
