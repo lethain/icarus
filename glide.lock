@@ -1,9 +1,14 @@
-hash: 5ee2c3927b814f8b023c86607cead513a88801ec5cbfae1f92f17f6f2006def3
-updated: 2016-05-12T15:52:58.36986049-07:00
+hash: ef8a7de88069d4f422f1f5ea988736d8ff6e3b6c67446fa92eda95acd3393375
+updated: 2016-05-18T19:18:34.398179694-07:00
 imports:
+- name: github.com/gorilla/feeds
+  version: 441264de03a8117ed530ae8e049d8f601a33a099
+- name: github.com/gorilla/feeds.git
+  version: 441264de03a8117ed530ae8e049d8f601a33a099
 - name: github.com/mediocregopher/radix.v2
   version: 74e50e64194d2d2f4836212451c28b127f9d7fa1
   subpackages:
+  - pool
   - redis
 - name: github.com/russross/blackfriday
   version: 2004188462c3946efefbdcd91aa83e49b4175bfb
