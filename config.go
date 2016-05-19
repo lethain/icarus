@@ -23,6 +23,7 @@ type Config struct {
 	ListCount   int
 	NumPages    int
 	RedisLoc    string
+	BlogName    string
 }
 
 func (c *Config) String() string {

@@ -116,6 +116,28 @@ func makeTagsHandler(cfg *Config, title string) http.HandlerFunc {
 
 }
 
+func makeFeedsHandler(cfg *Config) http.HandlerFunc {
+	handle := func(w http.ResponseWriter, r *http.Request) {
+		pgs, err := PagesForList(PageZsetByTime, 0, cfg.ListCount, true)
+		if err != nil {
+			errorPage(w, r, cfg, nil, err)
+			return
+		}
+		feed, err := BuildAtomFeed(cfg, pgs)
+		if err != nil {
+			errorPage(w, r, cfg, nil, err)
+			return
+		}
+		atom, err := feed.ToAtom()
+		if err != nil {
+			errorPage(w, r, cfg, nil, err)
+			return
+		}
+		fmt.Fprint(w, atom)
+	}
+	return handle
+}
+
 func makeListHandler(cfg *Config, list string, title string) http.HandlerFunc {
 	handle := func(w http.ResponseWriter, r *http.Request) {
 		offset := 0
@@ -242,13 +264,14 @@ func Serve(cfg *Config) {
 	if err != nil {
 		log.Fatalf("failed connecting to redis: %v", err)
 	}
-	
+
 	recentHandler := makeListHandler(cfg, PageZsetByTime, "Recent Pages")
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(cfg.StaticDir))))
 	http.HandleFunc("/list/trending/", makeListHandler(cfg, PageZsetByTrend, "Popular Pages"))
 	http.HandleFunc("/list/recent/", recentHandler)
 	http.HandleFunc("/tags/", makeTagsHandler(cfg, "Tags By Page Count"))
+	http.HandleFunc("/feeds/", makeFeedsHandler(cfg))
 	http.HandleFunc("/", makePageHandler(cfg, recentHandler))
 	http.ListenAndServe(cfg.NetLoc, nil)
 }
