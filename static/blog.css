@@ -134,7 +134,6 @@ h6, .h6 {
 
 /* Sidebar modules for boxing content */
 .sidebar-module {
-    padding: 15px;
     margin: 0 -15px 15px;
 }
 .sidebar-module-inset {
@@ -142,6 +141,14 @@ h6, .h6 {
     background-color: #f5f5f5;
     border-radius: 4px;
 }
+
+.sidebar-module ol li {
+    margin-bottom: 5px;
+}
+.sidebar-module ol li:last-child {
+    margin-bottom: 0;
+}
+
 .sidebar-module-inset p:last-child,
 .sidebar-module-inset ul:last-child,
 .sidebar-module-inset ol:last-child {

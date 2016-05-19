@@ -3,6 +3,7 @@ package icarus
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"net/http"
 	"time"
 )
@@ -15,8 +16,8 @@ const PageZsetByTime = "pages_by_time"
 const PageZsetByTrend = "pages_by_trend"
 const PageString = "page.%v"
 const SimilarPagesByTrend = "similar_pages.%v"
-const SimilarPagesExpire = 60 * 5
-const PageViewBonus = (60 * 60 * 24) * 1.0
+const SimilarPagesExpire = 60 * 60 * 24
+const PageViewBonus = 60 * 60 * 24
 const DefaultPeriod = 60 * 60
 
 const AnalyticsBackoff = "analytics.backoff.%v.%v"
@@ -113,7 +114,6 @@ func Surrounding(p *Page, num int, reverse bool) ([]*Page, error) {
 		end = "-inf"
 	}
 	rc, err := GetConfiguredRedisClient()
-
 	if err != nil {
 		return []*Page{}, err
 	}
@@ -130,6 +130,48 @@ func RecentPages(offset int, count int) ([]*Page, error) {
 
 func TrendingPages(offset int, count int) ([]*Page, error) {
 	return PagesForList(PageZsetByTrend, offset, count, true)
+}
+
+func SimilarPages(p *Page, offset int, count int) ([]*Page, error) {
+	if len(p.Tags) == 0 {
+		return []*Page{}, nil
+	}
+	similarKey := fmt.Sprintf(SimilarPagesByTrend, p.Slug)
+
+	// first, let's check if it's already been generated,
+	// in which case we can skip regenerating it
+	pgs, err := PagesForList(similarKey, offset, count, true)
+	if len(pgs) > 0 || err != nil {
+		return pgs, err
+	}
+
+	// union all slugs from all the page's tags,
+	// relying on articles appearing in multiple tags
+	// having their scored summed such that they are
+	// the highest scoring pages
+	rc, err := GetConfiguredRedisClient()
+	if err != nil {
+		return []*Page{}, err
+	}
+	cmds := []string{similarKey, strconv.Itoa(len(p.Tags))}
+	for _, tag := range p.Tags {
+		cmds = append(cmds, fmt.Sprintf(TagPagesZsetByTrend, tag))
+	}
+	err = rc.Cmd("ZUNIONSTORE", cmds).Err
+	if err != nil {
+		return []*Page{}, err
+	}
+	err = rc.Cmd("ZREM", similarKey, p.Slug).Err
+	if err != nil {
+		return []*Page{}, err
+	}
+	err = rc.Cmd("EXPIRE", similarKey, SimilarPagesExpire).Err
+	if err != nil {
+		return []*Page{}, err
+	}
+
+	// ok, let's try retrieving those slugs a second time
+	return PagesForList(similarKey, offset, count, true)
 }
 
 func Track(p *Page, r *http.Request) error {

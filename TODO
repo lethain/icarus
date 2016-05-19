@@ -1,9 +1,6 @@
 
 OK, here is some stuff we need to do:
 
-1. Related pages
-    1. calculate related pages for a given page
-    2. create 'similar/related' right-rail module for each page
 1. Analytics
     1. add ip rate-limiting logic to all analytics
     1. start tracking analytics

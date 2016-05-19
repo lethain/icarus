@@ -12,17 +12,18 @@ import (
 )
 
 var templateCache map[string]*template.Template
+const PagesInModules = 3
 
 func buildSidebar(cfg *Config, p *Page) (map[string]interface{}, error) {
 	params := make(map[string]interface{})
 
-	recent, err := RecentPages(0, 5)
+	recent, err := RecentPages(0, PagesInModules)
 	if err != nil {
 		log.Printf("error generating recent pages: %v", err)
 		recent = []*Page{}
 	}
 	params["Recent"] = recent
-	trending, err := TrendingPages(0, 5)
+	trending, err := TrendingPages(0, PagesInModules)
 	if err != nil {
 		log.Printf("error generating trending pages: %v", err)
 		trending = []*Page{}
@@ -43,8 +44,12 @@ func buildSidebar(cfg *Config, p *Page) (map[string]interface{}, error) {
 		}
 		params["Following"] = following
 
-		// TOOD: implement similar
-		params["Similar"] = []*Page{}
+		similar, err := SimilarPages(p, 0, PagesInModules)
+		if err != nil {
+			log.Printf("error generating similar pages: %v", err)
+			similar = []*Page{}
+		}
+		params["Similar"] = similar
 	} else {
 		params["Previous"] = []*Page{}
 		params["Following"] = []*Page{}
