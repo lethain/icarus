@@ -3,7 +3,6 @@ OK, here is some stuff we need to do.
 
 Tomorrow:
 
-1. implement search via http://www.blevesearch.com/
 1. Analytics
     1. add ip rate-limiting logic to all analytics
     1. start tracking analytics
@@ -26,7 +25,11 @@ Friday?
 
 Deployment
 
-1. probably move from flags to json config for configuration
-    (just too many flags for CLI IMHO)
 1. saltstack for setting this all up
 1. add css compaction/compression/merging
+
+
+Issues:
+
+1. search results return max 10... need to dig into
+    http://www.blevesearch.com/ a bit more

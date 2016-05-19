@@ -214,11 +214,6 @@ func TrackAnalytics(p *Page, r *http.Request) error {
 	return nil
 }
 
-// Search for pages by query string.
-func Search(q string) []*Page {
-	return make([]*Page, 0)
-}
-
 func CurrentTimestamp() int64 {
 	return time.Now().Unix()
 }

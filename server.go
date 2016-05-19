@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"html"
 
 	"strconv"
 	"strings"
@@ -138,6 +139,42 @@ func makeFeedsHandler(cfg *Config) http.HandlerFunc {
 	return handle
 }
 
+func makeSearchHandler(cfg *Config) http.HandlerFunc {
+	handle := func(w http.ResponseWriter, r *http.Request) {
+		qu := r.URL.Query().Get("q")
+		q := html.EscapeString(qu)
+
+		slugs, err := Search(q)
+		if err != nil {
+			errorPage(w, r, cfg, nil, err)
+			return
+		}
+
+		pgs, err := PagesFromRedis(slugs)
+		if err != nil {
+			errorPage(w, r, cfg, nil, err)
+			return
+		}
+
+		params, err := defaultParams(cfg, nil, r)
+		if err != nil {
+			errorPage(w, r, cfg, nil, err)
+			return
+		}
+		params["Query"] = q
+		params["Title"] = fmt.Sprintf("Results for \"%v\"", q)
+		params["Pages"] = pgs
+		err = renderTemplate(w, "list.html", params)
+		if err != nil {
+			errorPage(w, r, cfg, nil, err)
+			return
+		}
+
+	}
+	return handle
+
+}
+
 func makeListHandler(cfg *Config, list string, title string) http.HandlerFunc {
 	handle := func(w http.ResponseWriter, r *http.Request) {
 		offset := 0
@@ -260,7 +297,6 @@ func notFoundPage(w http.ResponseWriter, r *http.Request, cfg *Config, err error
 		errorPage(w, r, cfg, nil, err)
 		return
 	}
-
 }
 
 func Serve(cfg *Config) {
@@ -284,6 +320,7 @@ func Serve(cfg *Config) {
 	http.HandleFunc("/list/recent/", recentHandler)
 	http.HandleFunc("/tags/", makeTagsHandler(cfg, "Tags By Page Count"))
 	http.HandleFunc("/feeds/", makeFeedsHandler(cfg))
+	http.HandleFunc("/search/", makeSearchHandler(cfg))
 	http.HandleFunc("/", makePageHandler(cfg, recentHandler))
 	http.ListenAndServe(cfg.Server.Loc, nil)
 }
