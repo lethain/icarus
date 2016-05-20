@@ -34,8 +34,8 @@
 	    <button type="submit" class="btn btn-default" alt="Search"><span class="glyphicon glyphicon-search"></span></button>
 	  </form>
 	  <a class="blog-nav-item strong" href="/">Irrational Exuberance</a>
+	  <a class="blog-nav-item{{if eq .Path "list/recent/" "" }} active{{end}}" href="/list/recent/">Recent</a>	  
 	  <a class="blog-nav-item{{if eq .Path "list/trending/"}} active{{end}}" href="/list/trending/">Popular</a>
-	  <a class="blog-nav-item{{if eq .Path "list/recent/" "" }} active{{end}}" href="/list/recent/">Recent</a>
 	  <a class="blog-nav-item{{if eq .Path "tags/"}} active{{end}}" href="/tags/">Tags</a>
 	  <a class="blog-nav-item" href="/feeds/">RSS</a>
 	</nav>
