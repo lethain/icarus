@@ -137,7 +137,7 @@ from all indexes.
 
 Conceivably we might want to add a `iremove` command at some point to truly
 remove content, or you could just use `"draft": true` to remove the indexes
-and then do `redis-cli REM slug.<post-slug>` if you like living on the edge!
+and then do `redis-cli REM page.<post-slug>` if you like living on the edge!
 
 ## History
 

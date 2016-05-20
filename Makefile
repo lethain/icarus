@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 
 icarus:
 	go run cmd/icarus/main.go
@@ -12,3 +13,6 @@ build:
 install:
 	pushd cmd/icarus/; go install; popd
 	pushd cmd/icontent/; go install; popd
+
+brew-redis:
+	redis-server /usr/local/etc/redis.conf

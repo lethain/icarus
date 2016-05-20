@@ -64,6 +64,7 @@ func PageFromRedis(slug string) (*Page, error) {
 	if len(pages) != 1 {
 		return nil, fmt.Errorf("retrieve none-one number of values for %v", slug)
 	}
+
 	return pages[0], nil
 }
 
@@ -72,7 +73,7 @@ type Page struct {
 	Tags        []string `json:"tags"`
 	Title       string   `json:"title"`
 	Summary     string   `json:"summary"`
-	Content     string   `json:"content"`
+	Content     string   `json:"html"`
 	Draft       bool     `json:"draft"`
 	PubDateStr  int64    `json:"pub_date"`
 	EditDateStr int64    `json:"edit_date"`
