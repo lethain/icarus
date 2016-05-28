@@ -7,12 +7,12 @@ icontent:
 	go run cmd/icontent/main.go
 
 build:
-	pushd cmd/icarus/; go build; popd
-	pushd cmd/icontent/; go build; popd
+	pushd cmd/icarus/; glide build; popd
+	pushd cmd/icontent/; glide build; popd
 
 install:
-	pushd cmd/icarus/; go install; popd
-	pushd cmd/icontent/; go install; popd
+	pushd cmd/icarus/; glide install; popd
+	pushd cmd/icontent/; glide install; popd
 
 sys-install:
 	mv cmd/icarus/icarus /usr/local/bin/
