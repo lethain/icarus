@@ -180,6 +180,10 @@ h6, .h6 {
     margin-bottom: 5px;
     font-size: 30px;
 }
+.blog-post-title:first-child {
+    margin-top: 0;
+}
+
 .blog-post-meta {
     margin-bottom: 20px;
     color: #999;
